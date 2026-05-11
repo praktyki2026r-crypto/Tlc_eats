@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, Restaurant, Category, MenuItem, OptionGroup, Option
+from django.utils import timezone
+from .models import User, Restaurant, Category, MenuItem, OptionGroup, Option, Order, UserOrder, OrderItem, OrderItemOption
 
 # walidacja hasel, tworzy uzytkownika z zahashowanym haslem
 class RegisterSerializer(serializers.ModelSerializer):
@@ -68,3 +69,60 @@ class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = ['id', 'name', 'categories']
+
+#order
+class OrderSerializer(serializers.ModelSerializer):
+    created_by = serializers.StringRelatedField(read_only=True)
+    is_active = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ['id', 'created_by', 'price', 'deadline', 'is_active']
+
+    def get_is_active(self, obj):
+        return obj.deadline > timezone.now()
+
+class CreateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['deadline', 'price']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        order = Order.objects.create(created_by=user, **validated_data)
+        return order
+
+class OrderItemOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItemOption
+        fields = ['option']
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    selected_options = OrderItemOptionSerializer(many=True, required=False)
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'menu_item', 'quantity', 'note', 'selected_options']
+
+    def create(self, validated_data):
+        options_data = validated_data.pop('selected_options', [])
+        order_item = OrderItem.objects.create(**validated_data)
+        for option_data in options_data:
+            OrderItemOption.objects.create(order_item=order_item, **option_data)
+        return order_item
+
+class UserOrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True, source='orderitem_set')
+    total = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserOrder
+        fields = ['id', 'user', 'status', 'items', 'total']
+
+    def get_total(self, obj):
+        total = 0
+        for item in obj.orderitem_set.all():
+            total += item.menu_item.price * item.quantity
+            for opt in item.selected_options.all():
+                total += opt.option.extra_price * item.quantity
+        return total

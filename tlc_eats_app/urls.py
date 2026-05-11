@@ -12,4 +12,9 @@ urlpatterns = [
     # Restauracje
     path('restaurants/', views.RestaurantListView.as_view(), name='restaurants'),
     path('restaurants/<int:pk>/', views.RestaurantDetailView.as_view(), name='restaurant-detail'),
+
+    # Zamówienia
+    path('orders/', views.OrderView.as_view(), name='orders'),
+    path('orders/<int:pk>/close/', views.CloseOrderView.as_view(), name='order-close'),
+    path('user-orders/', views.UserOrderView.as_view(), name='user-orders'),
 ]
