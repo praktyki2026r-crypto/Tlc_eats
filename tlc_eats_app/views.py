@@ -2,18 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from .models import User, Restaurant, MenuItem, Order, UserOrder, OrderItem
 from .serializers import (RegisterSerializer, LoginSerializer,
                           RestaurantSerializer, MenuItemSerializer,
                           OrderSerializer, CreateOrderSerializer,
+                          UpdateOrderSerializer,
                           UserOrderSerializer, OrderItemSerializer)
 from django.utils import timezone
+from .permissions import IsInitiator
 
-# POST /orders/ — inicjator tworzy okno zamówień
-# GET /orders/ — lista aktywnych zamówień
-
-# Generuje token JWT dla użytkownika
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {
@@ -21,7 +19,6 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
-# POST /register/ tworzy usera, zwraca tokeny jwt
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -34,7 +31,6 @@ class RegisterView(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# POST /login/ sprawdza dane, zwraca tokeny jwt
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -47,7 +43,6 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# POST /logout/ unieważnia refresh token 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -60,7 +55,6 @@ class LogoutView(APIView):
         except Exception:
             return Response({'error': 'Nieprawidłowy token'}, status=status.HTTP_400_BAD_REQUEST)
 
-# GET /me/ zwraca dane zalogowanego uzytkownika
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -68,9 +62,11 @@ class MeView(APIView):
         return Response({
             'email': request.user.email,
             'id': request.user.id,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'is_initiator': request.user.is_initiator,
         }, status=status.HTTP_200_OK)
 
-# GET /restaurants/
 class RestaurantListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -79,7 +75,6 @@ class RestaurantListView(APIView):
         serializer = RestaurantSerializer(restaurants, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# GET /restaurants/<id>/
 class RestaurantDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -92,10 +87,13 @@ class RestaurantDetailView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class OrderView(APIView):
-    permission_classes = [IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsInitiator()]
+        return [IsAuthenticated()]
 
     def get(self, request):
-        orders = Order.objects.filter(deadline__gt=timezone.now())
+        orders = Order.objects.filter(status='active')
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -106,9 +104,23 @@ class OrderView(APIView):
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# POST /orders/<id>/close/ — zamknięcie zamówienia
-class CloseOrderView(APIView):
+class ActiveOrderView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        now = timezone.now()
+        order = Order.objects.filter(
+            status='active',
+            start_time__lte=now,
+            deadline__gte=now
+        ).first()
+        if not order:
+            return Response({'message': 'Brak aktywnych zamówień'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CloseOrderView(APIView):
+    permission_classes = [IsInitiator]
 
     def post(self, request, pk):
         try:
@@ -119,11 +131,31 @@ class CloseOrderView(APIView):
         if order.created_by != request.user:
             return Response({'error': 'Tylko inicjator może zamknąć zamówienie'}, status=status.HTTP_403_FORBIDDEN)
 
-        order.deadline = timezone.now()
+        order.status = 'closed'
         order.save()
         return Response({'message': 'Zamówienie zamknięte'}, status=status.HTTP_200_OK)
 
-# POST /user-orders/ — użytkownik składa zamówienie
+class UpdateOrderView(APIView):
+    permission_classes = [IsInitiator]
+
+    def patch(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({'error': 'Zamówienie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
+
+        if order.created_by != request.user:
+            return Response({'error': 'Tylko inicjator może edytować zamówienie'}, status=status.HTTP_403_FORBIDDEN)
+
+        if order.status == 'closed':
+            return Response({'error': 'Nie można edytować zamkniętego zamówienia'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UpdateOrderSerializer(order, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class UserOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -139,12 +171,13 @@ class UserOrderView(APIView):
         except Order.DoesNotExist:
             return Response({'error': 'Zamówienie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
 
-        if order.deadline <= timezone.now():
+        if order.status == 'closed':
             return Response({'error': 'Okno zamówień jest zamknięte'}, status=status.HTTP_400_BAD_REQUEST)
 
         user_order, created = UserOrder.objects.get_or_create(
             user=request.user,
-            status='active'
+            order=order,             
+            defaults={'status': 'active'}
         )
 
         items_data = request.data.get('items', [])
@@ -158,3 +191,123 @@ class UserOrderView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(UserOrderSerializer(user_order).data, status=status.HTTP_201_CREATED)
+
+class OrderHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        orders = Order.objects.filter(status='closed').order_by('-deadline')
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserOrderHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_orders = UserOrder.objects.filter(
+            user=request.user,
+            order__status='closed'
+        ).order_by('-order__deadline')
+        serializer = UserOrderSerializer(user_orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# GET /orders/<id>/summary/ — podsumowanie per restauracja
+# GET /orders/<id>/summary/?by=user — podsumowanie per użytkownik
+class OrderSummaryView(APIView):
+    permission_classes = [IsInitiator]
+
+    def get(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({'error': 'Zamówienie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
+
+        by = request.query_params.get('by', 'restaurant')
+
+        if by == 'user':
+            return self._summary_by_user(order)
+        return self._summary_by_restaurant(order)
+
+    def _summary_by_restaurant(self, order):
+        from .models import Restaurant
+        result = []
+        restaurants = Restaurant.objects.filter(
+            menuitem__orderitem__order=order
+        ).distinct()
+
+        for restaurant in restaurants:
+            items = OrderItem.objects.filter(
+                order=order,
+                menu_item__restaurant=restaurant
+            )
+            restaurant_items = []
+            restaurant_total = 0
+
+            for item in items:
+                options = [
+                    f"{opt.option.group.name}: {opt.option.name}"
+                    for opt in item.selected_options.all()
+                ]
+                item_total = item.menu_item.price * item.quantity
+                for opt in item.selected_options.all():
+                    item_total += opt.option.extra_price * item.quantity
+
+                restaurant_items.append({
+                    'menu_item': item.menu_item.name,
+                    'quantity': item.quantity,
+                    'options': options,
+                    'note': item.note,
+                    'price': item_total,
+                })
+                restaurant_total += item_total
+
+            result.append({
+                'restaurant': restaurant.name,
+                'items': restaurant_items,
+                'total': restaurant_total,
+            })
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    def _summary_by_user(self, order):
+        user_orders = UserOrder.objects.filter(order=order)
+        result = []
+
+        for user_order in user_orders:
+            user_restaurants = {}
+            user_total = 0
+
+            for item in user_order.orderitem_set.all():
+                restaurant_name = item.menu_item.restaurant.name
+                if restaurant_name not in user_restaurants:
+                    user_restaurants[restaurant_name] = {
+                        'items': [],
+                        'total': 0
+                    }
+
+                options = [
+                    f"{opt.option.group.name}: {opt.option.name}"
+                    for opt in item.selected_options.all()
+                ]
+                item_total = item.menu_item.price * item.quantity
+                for opt in item.selected_options.all():
+                    item_total += opt.option.extra_price * item.quantity
+
+                user_restaurants[restaurant_name]['items'].append({
+                    'menu_item': item.menu_item.name,
+                    'quantity': item.quantity,
+                    'options': options,
+                    'note': item.note,
+                    'price': item_total,
+                })
+                user_restaurants[restaurant_name]['total'] += item_total
+                user_total += item_total
+
+            result.append({
+                'user': f"{user_order.user.first_name} {user_order.user.last_name}",
+                'email': user_order.user.email,
+                'restaurants': user_restaurants,
+                'total': user_total,
+            })
+
+        return Response(result, status=status.HTTP_200_OK)

@@ -6,16 +6,16 @@ from .models import User, Restaurant, Category, MenuItem, OptionGroup, Option, O
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     ordering = ['email']
-    list_display = ['email', 'is_staff', 'is_active']
+    list_display = ['email', 'is_staff', 'is_active', 'is_initiator']
     search_fields = ['email']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Uprawnienia', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Uprawnienia', {'fields': ('is_staff', 'is_active', 'is_superuser', 'is_initiator', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active'),
+            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active', 'is_initiator'),
         }),
     )
 

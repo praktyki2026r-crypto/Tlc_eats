@@ -16,27 +16,26 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
-# konto uzytkownika / logowanie emailem
 class User(AbstractUser):
-    username = None  # brak username
+    username = None
     email = models.EmailField(unique=True)
-
+    first_name = models.CharField(max_length=100) 
+    last_name = models.CharField(max_length=100) 
+    is_initiator = models.BooleanField(default=False)  
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+    objects = UserManager()
 
-    objects = UserManager() #wlasny manager
-
-# restauracja
 class Restaurant(models.Model):
     name = models.CharField(max_length=200)
 
-# kategoria dań
 class Category(models.Model):
     restaurant = models.ForeignKey("Restaurant", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
+
 
 # danie ze składnikami
 class MenuItem(models.Model):
@@ -73,19 +72,28 @@ class Option(models.Model):
 
 #okno zamowien (tworzy inicjator)
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('closed', 'Closed'),
+    ]
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
+    start_time = models.DateTimeField()        
     deadline = models.DateTimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')  # ← i tego
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
 #zamowienie uzytkownika
 class UserOrder(models.Model):
     STATUS_CHOICES = [
-        ("active", "Active"),
-        ("closed", "Closed"),
+        ('active', 'Active'),
+        ('w_realizacji', 'W realizacji'),
+        ('w_dostarczeniu', 'W dostarczeniu'),
+        ('zakonczone', 'Zakończone'),
     ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="active")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)  
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+
 
 #pozycja w zamowieniu oraz notatka
 class OrderItem(models.Model):

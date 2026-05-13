@@ -3,14 +3,13 @@ from django.contrib.auth import authenticate
 from django.utils import timezone
 from .models import User, Restaurant, Category, MenuItem, OptionGroup, Option, Order, UserOrder, OrderItem, OrderItemOption
 
-# walidacja hasel, tworzy uzytkownika z zahashowanym haslem
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True) #hasło nie wroci w odpowiedzi json
+    password2 = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'password2']
+        fields = ['email', 'first_name', 'last_name', 'password', 'password2']  
 
     def validate(self, data):
         if data['password'] != data['password2']:
@@ -21,11 +20,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         user = User.objects.create_user(
             email=validated_data['email'],
+            first_name=validated_data['first_name'],   
+            last_name=validated_data['last_name'],    
             password=validated_data['password']
         )
         return user
 
-# sprawdza email i haslo
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
@@ -70,22 +71,21 @@ class RestaurantSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = ['id', 'name', 'categories']
 
-#order
 class OrderSerializer(serializers.ModelSerializer):
     created_by = serializers.StringRelatedField(read_only=True)
     is_active = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'created_by', 'price', 'deadline', 'is_active']
+        fields = ['id', 'created_by', 'price', 'start_time', 'deadline', 'status', 'is_active']  
 
     def get_is_active(self, obj):
-        return obj.deadline > timezone.now()
+        return obj.status == 'active'
 
 class CreateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['deadline', 'price']
+        fields = ['start_time', 'deadline', 'price'] 
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -93,16 +93,19 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         return order
 
 class OrderItemOptionSerializer(serializers.ModelSerializer):
+    option_name = serializers.CharField(source='option.name', read_only=True)
+    group_name = serializers.CharField(source='option.group.name', read_only=True)
+
     class Meta:
         model = OrderItemOption
-        fields = ['option']
+        fields = ['option', 'option_name', 'group_name']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     selected_options = OrderItemOptionSerializer(many=True, required=False)
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'menu_item', 'quantity', 'note', 'selected_options']
+        fields = ['id', 'user_order', 'order', 'menu_item', 'quantity', 'note', 'selected_options']
 
     def create(self, validated_data):
         options_data = validated_data.pop('selected_options', [])
@@ -126,3 +129,8 @@ class UserOrderSerializer(serializers.ModelSerializer):
             for opt in item.selected_options.all():
                 total += opt.option.extra_price * item.quantity
         return total
+
+class UpdateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['start_time', 'deadline', 'price']
