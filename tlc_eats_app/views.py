@@ -381,3 +381,20 @@ class ChangePasswordView(APIView):
         request.user.set_password(new_password)
         request.user.save()
         return Response({'message': 'Hasło zmienione pomyślnie'}, status=status.HTTP_200_OK)
+    
+class DeleteOrderItemView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk, item_pk):
+        try:
+            item = OrderItem.objects.get(
+                pk=item_pk,
+                user_order__user=request.user,
+                user_order__pk=pk,
+                order__status='active'
+            )
+        except OrderItem.DoesNotExist:
+            return Response({'error': 'Nie znaleziono pozycji'}, status=status.HTTP_404_NOT_FOUND)
+        
+        item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
