@@ -8,7 +8,7 @@ from .models import User, Restaurant, DailySpecial, MenuItem, Order, UserOrder, 
 from .serializers import (RegisterSerializer, LoginSerializer,
                           RestaurantSerializer, MenuItemSerializer,
                           OrderSerializer, CreateOrderSerializer,
-                          UpdateOrderSerializer,
+                          UpdateOrderSerializer,UserProfileSerializer,
                           UserOrderSerializer, DailySpecialSerializer, OrderItemSerializer)
 from django.utils import timezone
 from .permissions import IsInitiator
@@ -347,3 +347,37 @@ class OrderSummaryView(APIView):
             })
 
         return Response(result, status=status.HTTP_200_OK)
+    
+# GET /profile/ — pobierz dane profilu
+# PATCH /profile/ — edytuj dane profilu
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+# POST /profile/change-password/
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not request.user.check_password(old_password):
+            return Response({'error': 'Stare hasło jest nieprawidłowe'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(new_password) < 8:
+            return Response({'error': 'Nowe hasło musi mieć co najmniej 8 znaków'}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.set_password(new_password)
+        request.user.save()
+        return Response({'message': 'Hasło zmienione pomyślnie'}, status=status.HTTP_200_OK)
