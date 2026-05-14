@@ -26,6 +26,6 @@ urlpatterns = [
     
     # Zamowienia uzytkownika
     path('user-orders/', views.UserOrderView.as_view(), name='user-orders'),
-    path('user-orders/history/', views.UserOrderHistoryView.as_view(), name='user-order-history')
-    path('user-orders/<int:pk>/items/<int:item_pk>/delete/', views.DeleteOrderItemView.as_view(), name='delete-order-item'),
+    path('user-orders/history/', views.UserOrderHistoryView.as_view(), name='user-order-history'),
+    path('user-orders/<int:pk>/items/<int:item_pk>/delete/', views.DeleteOrderItemView.as_view(), name='delete-order-item')
 ]

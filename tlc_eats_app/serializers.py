@@ -55,7 +55,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ['id', 'name', 'price', 'ingredients', 'option_groups']
+        fields = ['id', 'name', 'price', 'ingredients', 'image', 'is_available', 'option_groups']
 
 class CategorySerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True, source='menuitem_set')
@@ -92,10 +92,11 @@ class DailySpecialSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     created_by = serializers.StringRelatedField(read_only=True)
     is_active = serializers.SerializerMethodField()
+    restaurant_name = serializers.CharField(source='restaurant.name', read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'created_by', 'price', 'start_time', 'deadline', 'status', 'is_active']  
+        fields = ['id', 'created_by', 'restaurant', 'restaurant_name', 'price', 'start_time', 'deadline', 'status', 'is_active']  
 
     def get_is_active(self, obj):
         return obj.status == 'active'
@@ -103,7 +104,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class CreateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['start_time', 'deadline', 'price'] 
+        fields = ['restaurant', 'start_time', 'deadline', 'price'] 
 
     def create(self, validated_data):
         user = self.context['request'].user
