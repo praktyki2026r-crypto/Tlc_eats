@@ -205,10 +205,10 @@ class UserOrderView(APIView):
             except MenuItem.DoesNotExist:
                 return Response({'error': 'Danie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
 
-        if not menu_item.restaurant.is_open():
-            return Response({
-                'error': f'Restauracja {menu_item.restaurant.name} jest teraz zamknięta'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            if not menu_item.restaurant.is_open():
+                return Response({
+                    'error': f'Restauracja {menu_item.restaurant.name} jest teraz zamknięta'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         user_order, created = UserOrder.objects.get_or_create(
             user=request.user,
