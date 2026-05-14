@@ -132,11 +132,18 @@ class ActiveOrderView(APIView):
 
     def get(self, request):
         now = timezone.now()
-        order = Order.objects.filter(
+        qs = Order.objects.filter(
             status='active',
             start_time__lte=now,
             deadline__gte=now
-        ).first()
+        )
+
+        # opcjonalne filtrowanie po restauracji
+        restaurant_id = request.query_params.get('restaurant')
+        if restaurant_id:
+            qs = qs.filter(restaurant__id=restaurant_id)
+
+        order = qs.first()
         if not order:
             return Response({'message': 'Brak aktywnych zamówień'}, status=status.HTTP_404_NOT_FOUND)
         serializer = OrderSerializer(order)

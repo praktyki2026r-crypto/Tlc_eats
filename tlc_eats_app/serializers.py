@@ -104,7 +104,17 @@ class OrderSerializer(serializers.ModelSerializer):
 class CreateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['restaurant', 'start_time', 'deadline', 'price'] 
+        fields = ['restaurant', 'start_time', 'deadline', 'price']
+
+    def validate_restaurant(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError('Ta restauracja jest nieaktywna')
+        return value
+
+    def validate(self, data):
+        if data['start_time'] >= data['deadline']:
+            raise serializers.ValidationError('Czas zamknięcia musi być późniejszy niż czas otwarcia')
+        return data
 
     def create(self, validated_data):
         user = self.context['request'].user
