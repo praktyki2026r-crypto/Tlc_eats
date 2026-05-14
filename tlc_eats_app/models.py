@@ -28,6 +28,58 @@ class User(AbstractUser):
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    facebook_url = models.URLField(blank=True, null=True)
+    website_url = models.URLField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def is_open(self):
+        from django.utils import timezone
+        import datetime
+        now = timezone.localtime(timezone.now())
+        today = now.weekday()  # 0=poniedziałek, 6=niedziela
+        try:
+            hours = self.hours.get(day=today)
+            if hours.is_closed:
+                return False
+            return hours.opening_time <= now.time() <= hours.closing_time
+        except RestaurantHours.DoesNotExist:
+            return True
+
+    def __str__(self):
+        return self.name
+
+class RestaurantHours(models.Model):
+    DAY_CHOICES = [
+        (0, 'Poniedziałek'),
+        (1, 'Wtorek'),
+        (2, 'Środa'),
+        (3, 'Czwartek'),
+        (4, 'Piątek'),
+        (5, 'Sobota'),
+        (6, 'Niedziela'),
+    ]
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='hours')
+    day = models.IntegerField(choices=DAY_CHOICES)
+    opening_time = models.TimeField(null=True, blank=True)
+    closing_time = models.TimeField(null=True, blank=True)
+    is_closed = models.BooleanField(default=False)  
+
+    class Meta:
+        unique_together = ['restaurant', 'day']
+
+    def __str__(self):
+        return f"{self.restaurant.name} - {self.get_day_display()}"
+
+class DailySpecial(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='daily_specials')
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    date = models.DateField(auto_now_add=True)
+    source_url = models.URLField(blank=True, null=True)  # link do posta na FB
+
+    def __str__(self):
+        return f"{self.restaurant.name} - {self.name} ({self.date})"
 
 class Category(models.Model):
     restaurant = models.ForeignKey("Restaurant", on_delete=models.CASCADE)

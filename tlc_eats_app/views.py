@@ -1,14 +1,15 @@
+import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Restaurant, MenuItem, Order, UserOrder, OrderItem
+from .models import User, Restaurant, DailySpecial, MenuItem, Order, UserOrder, OrderItem
 from .serializers import (RegisterSerializer, LoginSerializer,
                           RestaurantSerializer, MenuItemSerializer,
                           OrderSerializer, CreateOrderSerializer,
                           UpdateOrderSerializer,
-                          UserOrderSerializer, OrderItemSerializer)
+                          UserOrderSerializer, DailySpecialSerializer, OrderItemSerializer)
 from django.utils import timezone
 from .permissions import IsInitiator
 
@@ -84,6 +85,28 @@ class RestaurantDetailView(APIView):
         except Restaurant.DoesNotExist:
             return Response({'error': 'Restauracja nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
         serializer = RestaurantSerializer(restaurant)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# GET /restaurants/<id>/daily-special/
+class DailySpecialView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            restaurant = Restaurant.objects.get(pk=pk)
+        except Restaurant.DoesNotExist:
+            return Response({'error': 'Restauracja nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
+
+        today = datetime.date.today()
+        special = DailySpecial.objects.filter(
+            restaurant=restaurant,
+            date=today
+        ).first()
+
+        if not special:
+            return Response({'message': 'Brak dania dnia'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DailySpecialSerializer(special)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class OrderView(APIView):
@@ -173,6 +196,19 @@ class UserOrderView(APIView):
 
         if order.status == 'closed':
             return Response({'error': 'Okno zamówień jest zamknięte'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # sprawdź czy restauracje są otwarte
+        items_data = request.data.get('items', [])
+        for item_data in items_data:
+            try:
+                menu_item = MenuItem.objects.get(pk=item_data.get('menu_item'))
+            except MenuItem.DoesNotExist:
+                return Response({'error': 'Danie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not menu_item.restaurant.is_open():
+            return Response({
+                'error': f'Restauracja {menu_item.restaurant.name} jest teraz zamknięta'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         user_order, created = UserOrder.objects.get_or_create(
             user=request.user,

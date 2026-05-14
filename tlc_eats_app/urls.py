@@ -12,6 +12,7 @@ urlpatterns = [
     # Restauracje
     path('restaurants/', views.RestaurantListView.as_view(), name='restaurants'),
     path('restaurants/<int:pk>/', views.RestaurantDetailView.as_view(), name='restaurant-detail'),
+    path('restaurants/<int:pk>/daily-special/', views.DailySpecialView.as_view(), name='daily-special'),
 
     # Zamówienia
     path('orders/', views.OrderView.as_view(), name='orders'),
