@@ -203,6 +203,14 @@ class UserOrderView(APIView):
 
         if order.status == 'closed':
             return Response({'error': 'Okno zamówień jest zamknięte'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        now = timezone.now()
+        if now > order.deadline:
+            return Response({'error': 'Czas na składanie zamówień minął'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if now < order.start_time:
+            return Response({'error': 'Okno zamówień jeszcze nie jest otwarte'}, status=status.HTTP_400_BAD_REQUEST)
+
 
         # sprawdź czy restauracje są otwarte
         items_data = request.data.get('items', [])

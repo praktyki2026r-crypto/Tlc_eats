@@ -162,7 +162,14 @@ class UserOrderSerializer(serializers.ModelSerializer):
 class UpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['start_time', 'deadline', 'price']
+        fields = ['restaurant', 'start_time', 'deadline', 'price']
+
+    def validate(self, data):
+        start = data.get('start_time', self.instance.start_time)
+        deadline = data.get('deadline', self.instance.deadline)
+        if start >= deadline:
+            raise serializers.ValidationError('Czas zamknięcia musi być późniejszy niż czas otwarcia')
+        return data
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
