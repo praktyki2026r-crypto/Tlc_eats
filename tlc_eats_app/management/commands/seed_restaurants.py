@@ -9,7 +9,7 @@ class Command(BaseCommand):
             {
                 'name': 'Połka i Allan',
                 'phone': '669132617',
-                'website_url': 'https://www.upajdygorlice.pl/',
+                'website_url': 'https://www.facebook.com/people/U-Po%C5%82ki-i-Allana/100062756751287/',
                 'facebook_url': None,
                 'hours': {
                     0: ('11:00', '22:00'), 1: ('11:00', '22:00'),
