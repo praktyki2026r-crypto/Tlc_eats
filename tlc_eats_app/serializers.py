@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from .models import User, Restaurant, Category, MenuItem, OptionGroup, Option, Order, UserOrder, OrderItem, OrderItemOption, DailySpecial
+from .models import User, Restaurant,RestaurantHours, Category, MenuItem, OptionGroup, Option, Order, UserOrder, OrderItem, OrderItemOption, DailySpecial
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -64,14 +64,22 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name', 'menu_items']
 
+class RestaurantHoursSerializer(serializers.ModelSerializer):
+    day_name = serializers.CharField(source='get_day_display', read_only=True)
+
+    class Meta:
+        model = RestaurantHours
+        fields = ['day', 'day_name', 'opening_time', 'closing_time', 'is_closed']
+
 class RestaurantSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True, source='category_set')
+    hours = RestaurantHoursSerializer(many=True, read_only=True)
     is_open = serializers.SerializerMethodField()
 
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'phone', 'facebook_url', 'website_url', 
-                  'opening_time', 'closing_time', 'is_active', 'is_open', 'categories']
+        fields = ['id', 'name', 'phone', 'facebook_url', 'website_url',
+                  'is_active', 'is_open', 'hours', 'categories']
 
     def get_is_open(self, obj):
         return obj.is_open()
