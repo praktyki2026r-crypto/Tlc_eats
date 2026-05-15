@@ -36,8 +36,8 @@ class Command(BaseCommand):
                 'website_url': None,
                 'facebook_url': 'https://www.facebook.com/people/Vesuvio-Pizza-Pasta/61585854013446/',
                 'hours': {
-                    0: (None, None, True),  # zamknięte
-                    1: (None, None, True),  # zamknięte
+                    0: (None, None, True),
+                    1: (None, None, True),
                     2: ('13:00', '21:00'), 3: ('13:00', '21:00'),
                     4: ('13:00', '21:00'), 5: ('13:00', '21:00'),
                     6: ('12:00', '20:00'),
@@ -109,7 +109,7 @@ class Command(BaseCommand):
                 'website_url': 'https://delpiero.gorlice.pl/wp-content/uploads/2026/02/menu-delpiero-2026-bez-grubych.pdf',
                 'facebook_url': None,
                 'hours': {
-                    0: (None, None, True),  # zamknięte
+                    0: (None, None, True),
                     1: ('10:00', '21:00'), 2: ('10:00', '21:00'),
                     3: ('10:00', '21:00'), 4: ('10:00', '22:00'),
                     5: ('10:00', '22:00'), 6: ('12:00', '21:00'),
@@ -121,7 +121,7 @@ class Command(BaseCommand):
                 'website_url': 'https://www.rafaello.gorlice.pl/',
                 'facebook_url': None,
                 'hours': {
-                    0: (None, None, True),  # zamknięte
+                    0: (None, None, True),
                     1: ('10:00', '21:00'), 2: ('10:00', '21:00'),
                     3: ('10:00', '21:00'), 4: ('10:00', '22:00'),
                     5: ('10:00', '22:00'), 6: ('12:00', '21:00'),
@@ -133,10 +133,10 @@ class Command(BaseCommand):
                 'website_url': 'https://barwojtekgorlice.pl/section:menu/polecane',
                 'facebook_url': None,
                 'hours': {
-                    0: (None, None, True),  # zamknięte
+                    0: ('10:00', '22:00'),
                     1: ('10:00', '21:00'), 2: ('10:00', '21:00'),
                     3: ('10:00', '21:00'), 4: ('10:00', '22:00'),
-                    5: ('10:00', '22:00'), 6: ('12:00', '21:00'),
+                    5: ('10:00', '22:00'), 6: (None, None, True),
                 }
             },
             {
@@ -178,7 +178,7 @@ class Command(BaseCommand):
         ]
 
         for r in restaurants:
-            restaurant, created = Restaurant.objects.get_or_create(
+            restaurant, created = Restaurant.objects.update_or_create(
                 name=r['name'],
                 defaults={
                     'phone': r['phone'],
@@ -189,12 +189,11 @@ class Command(BaseCommand):
             if created:
                 self.stdout.write(self.style.SUCCESS(f'Dodano: {restaurant.name}'))
             else:
-                self.stdout.write(self.style.WARNING(f'Już istnieje: {restaurant.name}'))
+                self.stdout.write(self.style.WARNING(f'Zaktualizowano: {restaurant.name}'))
 
-            # dodaj godziny
             for day, times in r['hours'].items():
                 is_closed = len(times) == 3 and times[2] is True
-                RestaurantHours.objects.get_or_create(
+                RestaurantHours.objects.update_or_create(
                     restaurant=restaurant,
                     day=day,
                     defaults={
