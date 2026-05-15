@@ -81,11 +81,16 @@ class Command(BaseCommand):
                     except ValueError:
                         pass
 
-                # składniki
+                # składniki — szukaj <pre> tylko w najbliższym kontenerze dania
                 ingredients = ''
-                desc_tag = tag.find_next('pre')
-                if desc_tag:
-                    ingredients = desc_tag.get_text(strip=True)
+                parent = tag.parent
+                if parent:
+                    desc_tag = parent.find('pre')
+                    if desc_tag:
+                        text = desc_tag.get_text(strip=True)
+                        # pomiń tekst z polityki cookies
+                        if 'cookie' not in text.lower() and 'polityka' not in text.lower():
+                            ingredients = text
 
                 if MenuItem.objects.filter(name=name, restaurant=restaurant).exists():
                     self.stdout.write(f'  Już istnieje: {name}')
@@ -100,4 +105,3 @@ class Command(BaseCommand):
                 )
 
                 self.stdout.write(self.style.SUCCESS(f'  Dodano: {name} — {price} zł'))
-                
