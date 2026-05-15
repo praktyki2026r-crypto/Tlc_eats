@@ -2,13 +2,13 @@ from django.core.management.base import BaseCommand
 from tlc_eats_app.models import Restaurant, Category, MenuItem, OptionGroup, Option
 import pdfplumber
 import re
+import ssl
 import urllib.request
 import os
 import tempfile
 
 PDF_URL = 'https://delpiero.gorlice.pl/wp-content/uploads/2026/02/menu-delpiero-2026-bez-grubych.pdf'
 
-# Tylko te kategorie nas interesują
 CATEGORIES = {
     'CIENKIE CIASTO': 'Pizza',
     'MAKARONY': 'Makarony',
@@ -19,20 +19,38 @@ CATEGORIES = {
     'SAŁATKI': 'Sałatki',
     'NA SŁODKO': 'Na słodko',
     'DODATKI': 'Dodatki',
+    'FAST-FOOD': 'Fast Food',
     'NAPOJE GORĄCE': 'Napoje gorące',
     'NAPOJE': 'Napoje',
+    
 }
 
-# Te kategorie pomijamy w całości
 SKIP_CATEGORIES = [
-    'PIWO', 'WINO', 'DRINKI', 'DRINKI BEZALKOHOLOWE', 'ALKOHOLE'
+    'PIWO', 'WINO', 'DRINKI BEZALKOHOLOWE', 'DRINKI', 'ALKOHOLE', 'PIWO I WINO'
 ]
 
-IGNORE_LINES = [
-    'menu', 'pizza', 'włoska', 'polska', 'fast-food', 'napoje gorące',
-    'napoje', 'piwo i wino', 'drinki bezalkoholowe', 'drinki', 'porcja',
-    'przy zwiększonym', 'zamówienia przyjmujemy', 'o chęci dzielenia',
-    'restauracja włoska', 'czyli kulinarne', 'pizza pół na pół',
+IGNORE_PATTERNS = [
+    r'^menu$',
+    r'^pizza$',
+    r'^włoska$',
+    r'^polska$',
+    r'^piwo i wino$',
+    r'^drinki bezalkoholowe$',
+    r'^drinki$',
+    r'^porcja .+$',
+    r'^przy zwiększonym',
+    r'^zamówienia przyjmujemy',
+    r'^o chęci dzielenia',
+    r'^restauracja włoska',
+    r'^czyli kulinarne',
+    r'^pizza pół na pół',
+    r'^23cm\s+30cm\s+40cm',
+    r'^0,25l\s+0,5l',
+    r'^40ml\s+0,5l',
+    r'^0,3l\s+0,5l',
+    r'^napoje gorące—*$',
+    r'^fast-food—*$',
+    r'^napoje gorące wloska$'
 ]
 
 class Command(BaseCommand):
@@ -45,16 +63,16 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Nie znaleziono Del Piero w bazie!'))
             return
 
+        # usuń stare dane
+        Category.objects.filter(restaurant=restaurant).delete()
+        self.stdout.write('Usunięto stare dane.')
+
         self.stdout.write('Pobieram PDF...')
         tmp_path = os.path.join(tempfile.gettempdir(), 'del_piero_menu.pdf')
         try:
-            # pomijamy weryfikację SSL (certyfikat strony jest nieprawidłowy)
-            import ssl
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
-
-            import urllib.request
             opener = urllib.request.build_opener(
                 urllib.request.HTTPSHandler(context=ctx)
             )
@@ -72,108 +90,120 @@ class Command(BaseCommand):
 
     def _parse_pdf(self, pdf_path, restaurant):
         current_category = None
-        skip_mode = False       # True gdy jesteśmy w kategorii alkoholowej
-        pizza_mode = False      # True gdy przetwarzamy pizzę (3 rozmiary)
+        skip_mode = False
+        pizza_mode = False
 
+        all_lines = []
         with pdfplumber.open(pdf_path) as pdf:
-            for page in pdf.pages:
+            self.stdout.write(f'Liczba stron: {len(pdf.pages)}')
+            for page_num, page in enumerate(pdf.pages):
                 text = page.extract_text()
-                if not text:
+                if text:
+                    lines = text.split('\n') 
+
+                    # strona 7 to fast-food nie ma nagłówka, dodajemy ręcznie
+                    if page_num == 7:
+                        lines = ['FAST-FOOD'] + lines
+                    # strona 8 to kawy nie ma nagłówka, dodajemy ręcznie
+                    if page_num == 8:
+                        lines = ['NAPOJE GORĄCE'] + lines
+                    # strona 9 to napoje zimne
+                    if page_num == 9:
+                        lines = ['NAPOJE'] + lines
+                    for line in lines:
+                        line = line.strip()
+                        if line:
+                            all_lines.append(line)
+
+        i = 0
+        while i < len(all_lines):
+            line = all_lines[i]
+            line_upper = line.upper().strip()
+
+            if any(line_upper == skip or line_upper.startswith(skip) for skip in SKIP_CATEGORIES):
+                skip_mode = True
+                current_category = None
+                pizza_mode = False
+                i += 1
+                continue
+
+            # stopki stron które wyglądają jak kategorie ale nimi nie są
+            # stopki stron – tylko te które NIE są kategoriami w CATEGORIES
+            FOOTER_STOPWORDS = ['PIZZA', 'WŁOSKA', 'POLSKA', 'PIWO I WINO']
+            if any(line_upper == fw for fw in FOOTER_STOPWORDS):
+                i += 1
+                continue
+
+            matched = self._match_category(line_upper)
+            if matched:
+                skip_mode = False
+                pizza_mode = matched == 'CIENKIE CIASTO'
+                if not (current_category and current_category.name == CATEGORIES[matched]):
+                    current_category, _ = Category.objects.get_or_create(
+                        name=CATEGORIES[matched],
+                        restaurant=restaurant
+                    )
+                    self.stdout.write(f'\n[Kategoria] {CATEGORIES[matched]}')
+                i += 1
+                continue
+
+            if skip_mode or current_category is None:
+                i += 1
+                continue
+
+            if self._should_ignore(line):
+                i += 1
+                continue
+
+            if pizza_mode:
+                skip = self._parse_pizza(all_lines, i, restaurant, current_category)
+                if skip:
+                    i += skip
                     continue
 
-                lines = [l.strip() for l in text.split('\n') if l.strip()]
+            skip = self._parse_item(all_lines, i, restaurant, current_category)
+            if skip:
+                i += skip
+                continue
 
-                i = 0
-                while i < len(lines):
-                    line = lines[i]
-                    line_upper = line.upper()
-
-                    # sprawdź czy to nagłówek kategorii do pominięcia
-                    if any(skip in line_upper for skip in SKIP_CATEGORIES):
-                        skip_mode = True
-                        current_category = None
-                        pizza_mode = False
-                        i += 1
-                        continue
-
-                    # sprawdź czy to nagłówek kategorii którą chcemy
-                    matched = self._match_category(line_upper)
-                    if matched:
-                        skip_mode = False
-                        pizza_mode = matched == 'CIENKIE CIASTO'
-                        current_category, _ = Category.objects.get_or_create(
-                            name=CATEGORIES[matched],
-                            restaurant=restaurant
-                        )
-                        self.stdout.write(f'\n[Kategoria] {CATEGORIES[matched]}')
-                        i += 1
-                        continue
-
-                    # jesteśmy w kategorii alkoholowej – pomijamy
-                    if skip_mode:
-                        i += 1
-                        continue
-
-                    # brak aktywnej kategorii
-                    if current_category is None:
-                        i += 1
-                        continue
-
-                    # pomiń linie nagłówkowe i stopki
-                    if self._should_ignore(line):
-                        i += 1
-                        continue
-
-                    # pomiń nagłówek rozmiarów pizzy
-                    if re.match(r'^23cm\s+30cm\s+40cm', line):
-                        i += 1
-                        continue
-
-                    # PIZZA – 3 rozmiary
-                    if pizza_mode:
-                        skip = self._parse_pizza(lines, i, restaurant, current_category)
-                        if skip:
-                            i += skip
-                            continue
-
-                    # ZWYKŁE DANIE – 1 lub 2 ceny
-                    skip = self._parse_item(lines, i, restaurant, current_category)
-                    if skip:
-                        i += skip
-                        continue
-
-                    i += 1
+            i += 1
 
     def _match_category(self, line_upper):
         for key in CATEGORIES:
-            if key in line_upper:
+            if line_upper == key:
+                return key
+            # obsługuje "CIENKIE CIASTO 23cm 30cm 40cm"
+            if line_upper.startswith(key):
                 return key
         return None
 
     def _should_ignore(self, line):
         line_lower = line.lower().strip()
-        for ig in IGNORE_LINES:
-            if ig in line_lower:
+        for pattern in IGNORE_PATTERNS:
+            if re.match(pattern, line_lower):
                 return True
         if re.match(r'^[\d\s,\.lcm/]+$', line_lower):
             return True
         return False
 
     def _get_ingredients(self, lines, i):
-        """Pobiera składniki z następnej linii jeśli nie jest ceną/nagłówkiem."""
         if i + 1 < len(lines):
-            next_line = lines[i + 1]
-            if (not re.match(r'^[\d\s]+$', next_line)
-                    and not self._match_category(next_line.upper())
-                    and not self._should_ignore(next_line)
-                    and not any(s in next_line.upper() for s in SKIP_CATEGORIES)):
+            next_line = lines[i + 1].strip()
+            next_upper = next_line.upper()
+            is_price_line = bool(re.match(r'^[\d\s,\.]+$', next_line))
+            is_category = bool(self._match_category(next_upper))
+            is_ignored = self._should_ignore(next_line)
+            is_skip = any(next_upper.startswith(s) for s in SKIP_CATEGORIES)
+            has_price = bool(re.match(r'^.+?\s+\d{1,3}\s*$', next_line))
+            has_3prices = bool(re.match(r'^.+?\s+\d{2}\s+\d{2}\s+\d{2,3}\s*$', next_line))
+
+            if not any([is_price_line, is_category, is_ignored, is_skip, has_price, has_3prices]):
                 return next_line, 2
         return '', 1
 
     def _parse_pizza(self, lines, i, restaurant, category):
         line = lines[i]
-        # usuń emoji
-        line_clean = re.sub(r'[^\w\s\-]', '', line).strip()
+        line_clean = re.sub(r'[^\w\s\-/]', '', line).strip()
 
         # "Nazwa  23  32  47"
         match3 = re.match(r'^(.+?)\s+(\d{2})\s+(\d{2})\s+(\d{2,3})\s*$', line_clean)
@@ -186,7 +216,7 @@ class Command(BaseCommand):
             self._save_pizza(name, ingredients, p23, p30, p40, restaurant, category)
             return skip
 
-        # pizze z jedną ceną (Szkolna 40cm=47, Familijna 50cm=61, Zawał=35, Calzone=36)
+        # jedna cena
         match1 = re.match(r'^(.+?)\s+(\d{2,3})\s*$', line_clean)
         if match1:
             name = match1.group(1).strip()
@@ -199,9 +229,9 @@ class Command(BaseCommand):
 
     def _parse_item(self, lines, i, restaurant, category):
         line = lines[i]
-        line_clean = re.sub(r'[^\w\s\-]', '', line).strip()
+        line_clean = re.sub(r'[^\w\s\-/,]', '', line).strip()
 
-        # 2 ceny (np. napoje 0,25l i 0,5l)
+        # 2 ceny
         match2 = re.match(r'^(.+?)\s+(\d+)\s+(\d+)\s*$', line_clean)
         if match2:
             name = match2.group(1).strip()
@@ -226,7 +256,6 @@ class Command(BaseCommand):
         if MenuItem.objects.filter(name=name, restaurant=restaurant).exists():
             self.stdout.write(f'  Już istnieje: {name}')
             return
-
         item = MenuItem.objects.create(
             restaurant=restaurant,
             category=category,
@@ -235,10 +264,7 @@ class Command(BaseCommand):
             ingredients=ingredients,
         )
         group = OptionGroup.objects.create(
-            menu_item=item,
-            name='Rozmiar',
-            type='single',
-            required=True,
+            menu_item=item, name='Rozmiar', type='single', required=True
         )
         Option.objects.create(group=group, name='23cm', extra_price=0)
         Option.objects.create(group=group, name='30cm', extra_price=p30 - p23)
@@ -270,10 +296,7 @@ class Command(BaseCommand):
             ingredients=ingredients,
         )
         group = OptionGroup.objects.create(
-            menu_item=item,
-            name='Rozmiar',
-            type='single',
-            required=True,
+            menu_item=item, name='Rozmiar', type='single', required=True
         )
         Option.objects.create(group=group, name='Mały', extra_price=0)
         Option.objects.create(group=group, name='Duży', extra_price=p2 - p1)
