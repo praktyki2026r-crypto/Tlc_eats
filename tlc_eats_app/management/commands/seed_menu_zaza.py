@@ -63,7 +63,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         try:
-            restaurant = Restaurant.objects.get(name='Zaza doner kebab')
+            restaurant = Restaurant.objects.get(name='Zaza')
         except Restaurant.DoesNotExist:
             self.stdout.write(self.style.ERROR('Nie znaleziono Zaza doner kebab w bazie!'))
             return
