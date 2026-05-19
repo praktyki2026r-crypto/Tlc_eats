@@ -73,6 +73,9 @@ class RestaurantListView(APIView):
 
     def get(self, request):
         restaurants = Restaurant.objects.all()
+        search = request.query_params.get('search')
+        if search:
+            restaurants = restaurants.filter(name__icontains=search)
         serializer = RestaurantSerializer(restaurants, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -413,3 +416,54 @@ class DeleteOrderItemView(APIView):
         
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+ # dodaj do views.py
+
+class OrderUserOrdersView(APIView):
+    permission_classes = [IsInitiator]
+
+    def get(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({'error': 'Zamówienie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
+
+        if order.created_by != request.user:
+            return Response({'error': 'Brak dostępu'}, status=status.HTTP_403_FORBIDDEN)
+
+        user_orders = UserOrder.objects.filter(order=order)
+        serializer = UserOrderSerializer(user_orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UpdateUserOrderStatusView(APIView):
+    permission_classes = [IsInitiator]
+
+    def patch(self, request, pk):
+        try:
+            user_order = UserOrder.objects.get(pk=pk)
+        except UserOrder.DoesNotExist:
+            return Response({'error': 'Zlecenie nie istnieje'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user_order.order.created_by != request.user:
+            return Response({'error': 'Brak dostępu'}, status=status.HTTP_403_FORBIDDEN)
+
+        new_status = request.data.get('status')
+        valid_statuses = ['active', 'w_realizacji', 'w_dostarczeniu', 'zakonczone']
+        if new_status not in valid_statuses:
+            return Response(
+                {'error': f'Nieprawidłowy status. Dostępne: {valid_statuses}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user_order.status = new_status
+        user_order.save()
+        return Response(UserOrderSerializer(user_order).data, status=status.HTTP_200_OK)   
+    
+class DeleteAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        user.delete()
+        return Response({'message': 'Konto zostało usunięte'}, status=status.HTTP_204_NO_CONTENT)

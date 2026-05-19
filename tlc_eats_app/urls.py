@@ -23,9 +23,11 @@ urlpatterns = [
     path('orders/<int:pk>/', views.UpdateOrderView.as_view(), name='order-update'),
     path('orders/<int:pk>/close/', views.CloseOrderView.as_view(), name='order-close'),
     path('orders/<int:pk>/summary/', views.OrderSummaryView.as_view(), name='order-summary'),
-    
+    path('orders/<int:pk>/user-orders/', views.OrderUserOrdersView.as_view(), name='order-user-orders'),
+    path('user-orders/<int:pk>/status/', views.UpdateUserOrderStatusView.as_view(), name='user-order-status'),
     # Zamowienia uzytkownika
     path('user-orders/', views.UserOrderView.as_view(), name='user-orders'),
     path('user-orders/history/', views.UserOrderHistoryView.as_view(), name='user-order-history'),
-    path('user-orders/<int:pk>/items/<int:item_pk>/delete/', views.DeleteOrderItemView.as_view(), name='delete-order-item')
+    path('user-orders/<int:pk>/items/<int:item_pk>/delete/', views.DeleteOrderItemView.as_view(), name='delete-order-item'),
+    path('profile/delete/', views.DeleteAccountView.as_view(), name='delete-account'),
 ]

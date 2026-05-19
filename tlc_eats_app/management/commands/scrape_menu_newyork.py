@@ -35,6 +35,9 @@ class Command(BaseCommand):
 
     def _parse_menu(self, text, restaurant):
         current_category = None
+        excluded_categories = [
+            'piwo', 'alkohol', 'trunki', 'wino', 'napoje alkoholowe'
+        ]
         lines = text.split('\n')
 
         for line in lines:
@@ -44,6 +47,9 @@ class Command(BaseCommand):
 
             # kategoria — linia z samymi wielkimi literami bez ceny
             if line.isupper() and not re.search(r'\d+[.,]\d+', line) and len(line) > 3:
+                if any(excl in line.lower() for excl in excluded_categories):
+                    current_category = None  # pomiń kategorię i jej pozycje
+                    continue
                 current_category, _ = Category.objects.get_or_create(
                     name=line.title(),
                     restaurant=restaurant

@@ -9,7 +9,7 @@ class Command(BaseCommand):
             {
                 'name': 'Połka i Allan',
                 'phone': '669132617',
-                'website_url': 'https://www.facebook.com/people/U-Po%C5%82ki-i-Allana/100062756751287/',
+                'website_url': None,
                 'facebook_url': None,
                 'hours': {
                     0: ('11:00', '22:00'), 1: ('11:00', '22:00'),
@@ -19,10 +19,22 @@ class Command(BaseCommand):
                 }
             },
             {
+                'name': 'Lucy Bar',
+                'phone': '723834440',
+                'website_url': None,
+                'facebook_url': None,
+                'hours': {
+                    0: ('08:00', '19:00'), 1: ('08:00', '19:00'),
+                    2: ('08:00', '19:00'), 3: ('08:00', '19:00'),
+                    4: ('08:00', '19:00'), 5: ('08:00', '19:00'),
+                    6: ('11:00', '19:00'),
+                }
+            },
+            {
                 'name': 'Dworcowa',
                 'phone': '730022404',
                 'website_url': None,
-                'facebook_url': 'https://www.facebook.com/dworcowagorlice/',
+                'facebook_url': None,
                 'hours': {
                     0: ('11:00', '22:00'), 1: ('11:00', '22:00'),
                     2: ('11:00', '22:00'), 3: ('11:00', '22:00'),
@@ -34,7 +46,7 @@ class Command(BaseCommand):
                 'name': 'Vesuvio',
                 'phone': '669666455',
                 'website_url': None,
-                'facebook_url': 'https://www.facebook.com/people/Vesuvio-Pizza-Pasta/61585854013446/',
+                'facebook_url': None,
                 'hours': {
                     0: (None, None, True),
                     1: (None, None, True),
@@ -83,7 +95,8 @@ class Command(BaseCommand):
                 'name': 'New York',
                 'phone': '183536825',
                 'website_url': 'https://barnewyorkgorlice.pl/wp-content/uploads/2023/11/menu-bistro-new-york-druk.pdf',
-                'facebook_url': None,
+                'facebook_url': "https://www.facebook.com/barnewyorkgorlice/"
+,
                 'hours': {
                     0: ('09:00', '17:00'), 1: ('09:00', '17:00'),
                     2: ('09:00', '17:00'), 3: ('09:00', '17:00'),
@@ -155,7 +168,7 @@ class Command(BaseCommand):
                 'name': 'Zaza',
                 'phone': '512785994',
                 'website_url': None,
-                'facebook_url': 'https://www.facebook.com/people/ZAZA-D%C3%96NER-Kebab-Gorlice/100063653014958/',
+                'facebook_url': None,
                 'hours': {
                     0: ('09:00', '22:00'), 1: ('09:00', '22:00'),
                     2: ('09:00', '22:00'), 3: ('09:00', '22:00'),

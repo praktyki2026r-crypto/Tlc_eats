@@ -115,7 +115,7 @@ MENU = {
     ],
     'Desery': [
         ('Czekoladowy fondant', 30, 'ciasto czekoladowe serwowane na ciepło z lodami waniliowymi i bitą śmietaną'),
-        ('Truskawkowe tiramisu', 0, 'inna odmiana włoskiego deseru, w naszym wydaniu z truskawkami'),
+        ('Truskawkowe tiramisu', 32, 'inna odmiana włoskiego deseru, w naszym wydaniu z truskawkami'),
     ],
 }
 
