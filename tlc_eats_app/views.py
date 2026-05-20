@@ -558,7 +558,7 @@ class MarkOrderDeliveredView(APIView):
         order.save()
 
         # powiadom wszystkich użytkowników
-        for user_order in order.user_orders.all():
+        for user_order in order.userorder_set.all():
             send_notification(f'user_{user_order.user.id}', f'Zamówienie #{order.id} zostało dostarczone!')
 
         return Response({'message': 'Zamówienie oznaczone jako dostarczone'})

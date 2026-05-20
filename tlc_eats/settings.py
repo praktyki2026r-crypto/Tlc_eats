@@ -1,4 +1,5 @@
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,3 +157,12 @@ STATIC_URL = 'static/'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+#celery
+CELERY_BEAT_SCHEDULE = {
+    'update-delivery-statuses': {
+        'task': 'tlc_eats_app.tasks.update_delivery_statuses',
+        'schedule': 60.0,  # co 60 sekund
+    },
+}
+

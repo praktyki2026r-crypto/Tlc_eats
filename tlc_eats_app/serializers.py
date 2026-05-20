@@ -96,7 +96,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'created_by', 'restaurant', 'restaurant_name', 'price', 'start_time', 'deadline', 'status', 'is_active']  
+        fields = ['id', 'created_by', 'restaurant', 'restaurant_name', 'price', 'start_time', 'deadline', 'status', 'delivery_status', 'is_active']
 
     def get_is_active(self, obj):
         return obj.status == 'active'
@@ -162,7 +162,7 @@ class UserOrderSerializer(serializers.ModelSerializer):
 class UpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order', 'status', 'payment_status', 'items']
+        fields = ['restaurant', 'start_time', 'deadline', 'price']
 
     def validate(self, data):
         start = data.get('start_time', self.instance.start_time)

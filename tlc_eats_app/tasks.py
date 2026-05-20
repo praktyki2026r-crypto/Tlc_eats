@@ -30,22 +30,20 @@ def update_delivery_statuses():
         order.save()
         send_notification(f'user_{order.created_by.id}', f'Zamówienie #{order.id} jest w trakcie realizacji!')
         # powiadom wszystkich użytkowników zamówienia
-        for user_order in order.user_orders.all():
+        for user_order in order.userorder_set.all():
             send_notification(f'user_{user_order.user.id}', f'Zamówienie #{order.id} jest w trakcie realizacji!')
 
     # 30 min po deadlinie → in_delivery
     orders_to_delivery = Order.objects.filter(
         delivery_status='in_progress',
-        deadline__lte=now - timezone.timedelta(minutes=30),
+        deadline__lte=now - timezone.timedelta(minutes=1), #zmienione do testu
     )
     for order in orders_to_delivery:
         order.delivery_status = 'in_delivery'
         order.save()
         send_notification(f'user_{order.created_by.id}', f'Zamówienie #{order.id} jest w trakcie dostawy!')
-        for user_order in order.user_orders.all():
+        for user_order in order.userorder_set.all():
             send_notification(f'user_{user_order.user.id}', f'Zamówienie #{order.id} jest w trakcie dostawy!')
-
-
 
 @shared_task
 def setup_periodic_tasks(sender, **kwargs):
