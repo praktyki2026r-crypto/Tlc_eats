@@ -72,6 +72,8 @@ class RestaurantHours(models.Model):
     def __str__(self):
         return f"{self.restaurant.name} - {self.get_day_display()}"
 
+
+
 class DailySpecial(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='daily_specials')
     name = models.CharField(max_length=200)
@@ -169,3 +171,15 @@ class OrderItem(models.Model):
 class OrderItemOption(models.Model):
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='selected_options')
     option = models.ForeignKey(Option, on_delete=models.CASCADE)
+
+class RestaurantOrder(models.Model):
+    STATUS = [
+        ('collecting', 'Zbieranie zamówień'),      # przed deadlinem
+        ('in_progress', 'W trakcie realizacji'),    # po deadlinie
+        ('in_delivery', 'W trakcie dostawy'),       # inicjator wysłał
+        ('delivered', 'Dostarczone'),               # inicjator potwierdził
+    ]
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='restaurant_orders')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS, default='collecting')
+    created_at = models.DateTimeField(auto_now_add=True)

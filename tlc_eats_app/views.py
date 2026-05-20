@@ -12,6 +12,19 @@ from .serializers import (RegisterSerializer, LoginSerializer,
                           UserOrderSerializer, DailySpecialSerializer, OrderItemSerializer)
 from django.utils import timezone
 from .permissions import IsInitiator
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+channel_layer = get_channel_layer()
+
+def send_notification(group, message):
+    async_to_sync(channel_layer.group_send)(
+        group,
+        {
+            'type': 'send_notification',
+            'message': message,
+        }
+    )
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -483,6 +496,9 @@ class PayUserOrderView(APIView):
 
         user_order.payment_status = 'pending'
         user_order.save()
+
+        # powiadomienie dla inicjatorów
+        send_notification('initiators', f'{request.user.first_name} {request.user.last_name} zgłosił płatność za zamówienie #{user_order.order.id}')
         return Response({'message': 'Płatność zgłoszona, czeka na potwierdzenie inicjatora'})
 
 
@@ -500,8 +516,11 @@ class ConfirmPaymentView(APIView):
 
         user_order.payment_status = 'confirmed'
         user_order.save()
+        
+        # powiadomienie dla pracownika
+        send_notification(f'user_{user_order.user.id}', 'Twoja płatność została potwierdzona!')
         return Response({'message': 'Płatność potwierdzona'})
-
+        
 
 class RejectPaymentView(APIView):
     permission_classes = [IsAuthenticated, IsInitiator]
@@ -517,4 +536,7 @@ class RejectPaymentView(APIView):
 
         user_order.payment_status = 'unpaid'
         user_order.save()
+
+        # powiadomienie dla pracownika
+        send_notification(f'user_{user_order.user.id}', 'Twoja płatność została odrzucona. Spróbuj ponownie.')
         return Response({'message': 'Płatność odrzucona'})
