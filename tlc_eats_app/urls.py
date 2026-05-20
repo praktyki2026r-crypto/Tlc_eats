@@ -25,9 +25,15 @@ urlpatterns = [
     path('orders/<int:pk>/summary/', views.OrderSummaryView.as_view(), name='order-summary'),
     path('orders/<int:pk>/user-orders/', views.OrderUserOrdersView.as_view(), name='order-user-orders'),
     path('user-orders/<int:pk>/status/', views.UpdateUserOrderStatusView.as_view(), name='user-order-status'),
+    
     # Zamowienia uzytkownika
     path('user-orders/', views.UserOrderView.as_view(), name='user-orders'),
     path('user-orders/history/', views.UserOrderHistoryView.as_view(), name='user-order-history'),
     path('user-orders/<int:pk>/items/<int:item_pk>/delete/', views.DeleteOrderItemView.as_view(), name='delete-order-item'),
     path('profile/delete/', views.DeleteAccountView.as_view(), name='delete-account'),
+   
+   #rozliczenia/platnosc
+    path('user-orders/<int:pk>/pay/', PayUserOrderView.as_view(), name='pay-user-order'),
+    path('user-orders/<int:pk>/confirm-payment/', ConfirmPaymentView.as_view(), name='confirm-payment'),
+    path('user-orders/<int:pk>/reject-payment/', RejectPaymentView.as_view(), name='reject-payment'),
 ]

@@ -467,3 +467,54 @@ class DeleteAccountView(APIView):
         user = request.user
         user.delete()
         return Response({'message': 'Konto zostało usunięte'}, status=status.HTTP_204_NO_CONTENT)
+
+#platnosc
+class PayUserOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            user_order = UserOrder.objects.get(pk=pk, user=request.user)
+        except UserOrder.DoesNotExist:
+            return Response({'error': 'Nie znaleziono zamówienia'}, status=404)
+
+        if user_order.payment_status != 'unpaid':
+            return Response({'error': 'Płatność już została zgłoszona'}, status=400)
+
+        user_order.payment_status = 'pending'
+        user_order.save()
+        return Response({'message': 'Płatność zgłoszona, czeka na potwierdzenie inicjatora'})
+
+
+class ConfirmPaymentView(APIView):
+    permission_classes = [IsAuthenticated, IsInitiator]
+
+    def post(self, request, pk):
+        try:
+            user_order = UserOrder.objects.get(pk=pk)
+        except UserOrder.DoesNotExist:
+            return Response({'error': 'Nie znaleziono zamówienia'}, status=404)
+
+        if user_order.payment_status != 'pending':
+            return Response({'error': 'Brak oczekującej płatności'}, status=400)
+
+        user_order.payment_status = 'confirmed'
+        user_order.save()
+        return Response({'message': 'Płatność potwierdzona'})
+
+
+class RejectPaymentView(APIView):
+    permission_classes = [IsAuthenticated, IsInitiator]
+
+    def post(self, request, pk):
+        try:
+            user_order = UserOrder.objects.get(pk=pk)
+        except UserOrder.DoesNotExist:
+            return Response({'error': 'Nie znaleziono zamówienia'}, status=404)
+
+        if user_order.payment_status != 'pending':
+            return Response({'error': 'Brak oczekującej płatności'}, status=400)
+
+        user_order.payment_status = 'unpaid'
+        user_order.save()
+        return Response({'message': 'Płatność odrzucona'})

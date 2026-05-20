@@ -162,7 +162,7 @@ class UserOrderSerializer(serializers.ModelSerializer):
 class UpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['restaurant', 'start_time', 'deadline', 'price']
+        fields = ['id', 'user', 'order', 'status', 'payment_status', 'items']
 
     def validate(self, data):
         start = data.get('start_time', self.instance.start_time)

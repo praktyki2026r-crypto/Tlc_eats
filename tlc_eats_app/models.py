@@ -21,6 +21,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=100) 
     last_name = models.CharField(max_length=100) 
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
     is_initiator = models.BooleanField(default=False)  
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -147,7 +148,14 @@ class UserOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)  
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
-
+    
+    PAYMENT_STATUS = [
+    ('unpaid', 'Nieopłacone'),
+    ('pending', 'Oczekuje na potwierdzenie'),
+    ('confirmed', 'Potwierdzone'),
+    ('rejected', 'Odrzucone'),
+    ]
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='unpaid')
 
 #pozycja w zamowieniu oraz notatka
 class OrderItem(models.Model):
