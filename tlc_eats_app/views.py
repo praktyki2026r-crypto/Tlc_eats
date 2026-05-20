@@ -523,6 +523,7 @@ class ConfirmPaymentView(APIView):
         
 
 class RejectPaymentView(APIView):
+
     permission_classes = [IsAuthenticated, IsInitiator]
 
     def post(self, request, pk):
@@ -540,3 +541,24 @@ class RejectPaymentView(APIView):
         # powiadomienie dla pracownika
         send_notification(f'user_{user_order.user.id}', 'Twoja płatność została odrzucona. Spróbuj ponownie.')
         return Response({'message': 'Płatność odrzucona'})
+
+class MarkOrderDeliveredView(APIView):
+    permission_classes = [IsAuthenticated, IsInitiator]
+
+    def post(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk, created_by=request.user)
+        except Order.DoesNotExist:
+            return Response({'error': 'Nie znaleziono zamówienia'}, status=404)
+
+        if order.delivery_status != 'in_delivery':
+            return Response({'error': 'Zamówienie nie jest w trakcie dostawy'}, status=400)
+
+        order.delivery_status = 'delivered'
+        order.save()
+
+        # powiadom wszystkich użytkowników
+        for user_order in order.user_orders.all():
+            send_notification(f'user_{user_order.user.id}', f'Zamówienie #{order.id} zostało dostarczone!')
+
+        return Response({'message': 'Zamówienie oznaczone jako dostarczone'})

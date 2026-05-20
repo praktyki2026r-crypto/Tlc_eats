@@ -37,4 +37,7 @@ urlpatterns = [
     path('user-orders/<int:pk>/pay/', PayUserOrderView.as_view(), name='pay-user-order'),
     path('user-orders/<int:pk>/confirm-payment/', ConfirmPaymentView.as_view(), name='confirm-payment'),
     path('user-orders/<int:pk>/reject-payment/', RejectPaymentView.as_view(), name='reject-payment'),
+
+    #powiadomienia
+    path('orders/<int:pk>/delivered/', views.MarkOrderDeliveredView.as_view(), name='order-delivered'),
 ]

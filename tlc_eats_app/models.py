@@ -132,11 +132,18 @@ class Order(models.Model):
         ('active', 'Active'),
         ('closed', 'Closed'),
     ]
+    DELIVERY_STATUS_CHOICES = [
+        ('collecting', 'Zbieranie zamówień'),
+        ('in_progress', 'W trakcie realizacji'),
+        ('in_delivery', 'W trakcie dostawy'),
+        ('delivered', 'Dostarczone'),
+    ]
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.SET_NULL, null=True, blank=True)
     start_time = models.DateTimeField()        
     deadline = models.DateTimeField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')  # ← i tego
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')  
+    delivery_status = models.CharField(max_length=20, choices=DELIVERY_STATUS_CHOICES, default='collecting')
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
 #zamowienie uzytkownika
