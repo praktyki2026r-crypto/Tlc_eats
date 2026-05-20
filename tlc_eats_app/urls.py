@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
+from .views import PayUserOrderView, ConfirmPaymentView, RejectPaymentView
 
 urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
