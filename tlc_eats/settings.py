@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'channels',
     'django_celery_beat',
+    'corsheaders',
     'tlc_eats_app'
 ]
 
@@ -41,6 +42,7 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
 CELERY_TIMEZONE = 'Europe/Warsaw'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -166,3 +168,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
