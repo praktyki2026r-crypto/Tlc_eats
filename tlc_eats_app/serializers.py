@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from .models import User, Restaurant,RestaurantHours, Category, MenuItem, OptionGroup, Option, Order, UserOrder, OrderItem, OrderItemOption, DailySpecial
+from .models import User, Restaurant,RestaurantHours,RestaurantRating, Category, MenuItem, OptionGroup, Option, Order, UserOrder, OrderItem, OrderItemOption, DailySpecial
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -75,14 +75,22 @@ class RestaurantSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True, source='category_set')
     hours = RestaurantHoursSerializer(many=True, read_only=True)
     is_open = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+
+    def get_average_rating(self, obj):
+        from .models import RestaurantRating
+        from django.db.models import Avg
+        avg = RestaurantRating.objects.filter(restaurant=obj).aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else None
 
     class Meta:
         model = Restaurant
         fields = ['id', 'name', 'phone', 'facebook_url', 'website_url',
-                  'is_active', 'is_open', 'hours', 'categories']
+                  'is_active', 'is_open','average_rating' ,'hours', 'categories']
 
     def get_is_open(self, obj):
         return obj.is_open()
+    
 
 class DailySpecialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -176,3 +184,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'first_name', 'last_name']
         read_only_fields = ['id', 'email']  # email nie można zmienić
+
+class RestaurantRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestaurantRating
+        fields = ['id', 'restaurant', 'user_order', 'rating']

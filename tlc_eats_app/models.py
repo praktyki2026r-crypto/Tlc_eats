@@ -190,3 +190,13 @@ class RestaurantOrder(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS, default='collecting')
     created_at = models.DateTimeField(auto_now_add=True)
+
+class RestaurantRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    user_order = models.ForeignKey('UserOrder', on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'user_order']    

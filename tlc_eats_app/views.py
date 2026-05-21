@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import User, Restaurant, DailySpecial, MenuItem, Order, UserOrder, OrderItem
 from .serializers import (RegisterSerializer, LoginSerializer,
                           RestaurantSerializer, MenuItemSerializer,
-                          OrderSerializer, CreateOrderSerializer,
+                          OrderSerializer,RestaurantRating, CreateOrderSerializer,
                           UpdateOrderSerializer,UserProfileSerializer,
                           UserOrderSerializer, DailySpecialSerializer, OrderItemSerializer)
 from django.utils import timezone
@@ -562,3 +562,31 @@ class MarkOrderDeliveredView(APIView):
             send_notification(f'user_{user_order.user.id}', f'Zamówienie #{order.id} zostało dostarczone!')
 
         return Response({'message': 'Zamówienie oznaczone jako dostarczone'})
+    
+class RateRestaurantView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            user_order = UserOrder.objects.get(pk=pk, user=request.user)
+        except UserOrder.DoesNotExist:
+            return Response({'error': 'Nie znaleziono zamówienia'}, status=404)
+
+        if user_order.order.delivery_status != 'delivered':
+            return Response({'error': 'Możesz ocenić lokal tylko po dostarczeniu zamówienia'}, status=400)
+
+        if RestaurantRating.objects.filter(user=request.user, user_order=user_order).exists():
+            return Response({'error': 'Już oceniłeś ten lokal'}, status=400)
+
+        rating = request.data.get('rating')
+        if not rating or int(rating) not in range(1, 6):
+            return Response({'error': 'Ocena musi być między 1 a 5'}, status=400)
+
+        RestaurantRating.objects.create(
+            user=request.user,
+            restaurant=user_order.order.restaurant,
+            user_order=user_order,
+            rating=rating,
+        )
+
+        return Response({'message': 'Ocena została dodana'})    

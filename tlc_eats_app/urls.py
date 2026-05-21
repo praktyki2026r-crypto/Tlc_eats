@@ -40,4 +40,7 @@ urlpatterns = [
 
     #powiadomienia
     path('orders/<int:pk>/delivered/', views.MarkOrderDeliveredView.as_view(), name='order-delivered'),
+
+    #oceny lokali
+    path('user-orders/<int:pk>/rate/', views.RateRestaurantView.as_view(), name='rate-restaurant'),
 ]
