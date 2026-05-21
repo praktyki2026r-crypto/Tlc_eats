@@ -36,7 +36,7 @@ def update_delivery_statuses():
     # 30 min po deadlinie → in_delivery
     orders_to_delivery = Order.objects.filter(
         delivery_status='in_progress',
-        deadline__lte=now - timezone.timedelta(minutes=1), #zmienione do testu
+        deadline__lte=now - timezone.timedelta(minutes=30), #zmienione do testu
     )
     for order in orders_to_delivery:
         order.delivery_status = 'in_delivery'
