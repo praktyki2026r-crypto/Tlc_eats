@@ -140,6 +140,7 @@ class Order(models.Model):
     ]
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.SET_NULL, null=True, blank=True)
+    all_restaurants = models.BooleanField(default=False)
     start_time = models.DateTimeField()        
     deadline = models.DateTimeField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')  
