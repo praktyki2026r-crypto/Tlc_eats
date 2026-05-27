@@ -1,1 +1,101 @@
-Bede wklejac ci po koleji seedy oraz zdjecia menu restauracji a ty bedziesz wyszukiwal rozmiar, skladniki. jezeli isnieją w karcie dwa razy te same dania i maja w nazwie np: ilosc ml to bedziesz dawal to do rozmiaru. w oknie dania wyswietla sie rozmiar wraz z checkboxami do wybrania jaki rozmiar sie chce (czyli jedno danie i w polu rozmiar checkboxy z pojemnoscia 200ml/300ml/ l/ s/m/l/xl itp. jezeli danie nie posiada rozmiaru to nie wyswietlasz "rozmiar:", tak samo wybranie rozmiaru nie jest obowiazkowe bo jest zaznaczone bazowy wybor wiec jak ktos nie zaznaczy to i tak bedzie dany rozmiar. skladniki sa po prostu wyswietlane(te ktore wystepuja w daniu) nie bierzemy pod uwage skladnikow do wyboru chyba ze jest np kebab i mieso do wyboru to piszesz to w skladinkach i dajesz np mieso do wyboru(wolowina, wieprzowina,kurczak) ale nie w check boxach tylko po prostu text, na dole jest notatka do zamowienia w ktorej ktos bedzie mogl to wypisac. jezeli chodzi o kebaby i nazwy pita mala  pita duza to ma byc to jedne danie a nie kilka i w rozmiarze dajesz mala/duza itp . czasami danie nie ma ani rozmiaru ani podanych skladnikow wiec po prostu nie wyswietlasz "rozmiar:, skladniki:" i jezeli bedzie dana restauracja miala danie w ktorj bedzie np sos do wyboru (czosnek/ ketchup) to dajesz to do "personalizacja(wpisac w notatce):" tak samo jak np mieso itp wiec w kebabie jak masz tylko rzeczy do wyboru to usuwasz sekcje skladniki i piszesz to w personalizacji tak samo jezeli za wieksze wplaci sie wiecej to wraz z baza danych zrobisz to tak ze jak z checkboxem wybiore cos wiekszego to cena sie zwieksza
+import { useState, useRef } from "react"
+import { In_Cart_Product } from "../assets/In_Cart_Product"
+
+function Product_Popup({ product, onClose, onAdd }) {
+  const firstSize = product.sizes?.length > 0 ? product.sizes[0] : null
+  const [selectedSize, setSelectedSize] = useState(firstSize)
+  const noteRef = useRef(null)
+
+  const currentPrice = selectedSize
+    ? product.cost + (selectedSize.extra_price ?? 0)
+    : product.cost
+
+  function addProduct() {
+    const order = new In_Cart_Product(
+      product.id,
+      product.name,
+      selectedSize,
+      noteRef.current.value,
+      currentPrice
+    )
+    onAdd(order)
+    onClose()
+  }
+
+  const hasSizes = product.sizes && product.sizes.length > 0
+  const hasIngredients = product.ingredients && product.ingredients.length > 0
+  const hasAddons = product.addons && product.addons.length > 0
+
+  return (
+    <>
+      <div className="overlay-popup" onClick={onClose}></div>
+      <div className="wrapper-popup">
+        <div className="dawheel-popup"></div>
+        <div className="product-popup">
+          <button className="close-btn" onClick={onClose}>✕</button>
+          <h2>{product.name}</h2>
+
+          {hasSizes && (
+            <>
+              <p className="sizes">Rozmiar:</p>
+              <ul>
+                {product.sizes.map((element) => (
+                  <li key={element.name}>
+                    <input
+                      type="radio"
+                      name="size"
+                      value={element.name}
+                      defaultChecked={element === firstSize}
+                      onChange={() => setSelectedSize(element)}
+                    />
+                    {element.name}
+                    {element.extra_price > 0 && ` (+${element.extra_price} zł)`}
+                    {element.extra_price < 0 && ` (${element.extra_price} zł)`}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {hasIngredients && (
+            <>
+              <p className="sizes">Składniki:</p>
+              <ul className="ul-decoration">
+                {product.ingredients.map((element, i) => (
+                  <li key={i}><p>{element}</p></li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {hasAddons && (
+            <>
+              <p className="sizes">Personalizacja (wpisać w notatce):</p>
+              <ul className="ul-decoration">
+                {product.addons.map((element, i) => (
+                  <li key={i}>{element}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          <p className="sizes">Notatka do zamówienia:</p>
+          <textarea className="note" ref={noteRef} />
+
+          <div className="info-popup">
+            <h2>{currentPrice.toFixed(2)} zł</h2>
+            <img
+              src="/images/circle-plus-solid-full.svg"
+              alt="plus"
+              width={60}
+              className="showproduct"
+              onClick={addProduct}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default Product_Popup
