@@ -448,7 +448,6 @@ class OrderUserOrdersView(APIView):
         serializer = UserOrderSerializer(user_orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 class UpdateUserOrderStatusView(APIView):
     permission_classes = [IsInitiator]
 
@@ -501,7 +500,6 @@ class PayUserOrderView(APIView):
         send_notification('initiators', f'{request.user.first_name} {request.user.last_name} zgłosił płatność za zamówienie #{user_order.order.id}')
         return Response({'message': 'Płatność zgłoszona, czeka na potwierdzenie inicjatora'})
 
-
 class ConfirmPaymentView(APIView):
     permission_classes = [IsAuthenticated, IsInitiator]
 
@@ -520,7 +518,6 @@ class ConfirmPaymentView(APIView):
         # powiadomienie dla pracownika
         send_notification(f'user_{user_order.user.id}', 'Twoja płatność została potwierdzona!')
         return Response({'message': 'Płatność potwierdzona'})
-        
 
 class RejectPaymentView(APIView):
 
@@ -589,4 +586,19 @@ class RateRestaurantView(APIView):
             rating=rating,
         )
 
-        return Response({'message': 'Ocena została dodana'})    
+        return Response({'message': 'Ocena została dodana'})  
+
+class LastOrderView(APIView):
+    permission_classes = [IsInitiator]
+
+    def get(self, request):
+        order = Order.objects.filter(
+            created_by=request.user
+        ).order_by('-deadline').first()
+        
+        if not order:
+            return Response({'message': 'Brak sesji'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

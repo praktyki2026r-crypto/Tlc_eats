@@ -26,13 +26,15 @@ urlpatterns = [
     path('orders/<int:pk>/summary/', views.OrderSummaryView.as_view(), name='order-summary'),
     path('orders/<int:pk>/user-orders/', views.OrderUserOrdersView.as_view(), name='order-user-orders'),
     path('user-orders/<int:pk>/status/', views.UpdateUserOrderStatusView.as_view(), name='user-order-status'),
-    
+    path('orders/last/', views.LastOrderView.as_view(), name='order-last'),
+
     # Zamowienia uzytkownika
     path('user-orders/', views.UserOrderView.as_view(), name='user-orders'),
     path('user-orders/history/', views.UserOrderHistoryView.as_view(), name='user-order-history'),
     path('user-orders/<int:pk>/items/<int:item_pk>/delete/', views.DeleteOrderItemView.as_view(), name='delete-order-item'),
     path('profile/delete/', views.DeleteAccountView.as_view(), name='delete-account'),
    
+
    #rozliczenia/platnosc
     path('user-orders/<int:pk>/pay/', PayUserOrderView.as_view(), name='pay-user-order'),
     path('user-orders/<int:pk>/confirm-payment/', ConfirmPaymentView.as_view(), name='confirm-payment'),
@@ -43,4 +45,5 @@ urlpatterns = [
 
     #oceny lokali
     path('user-orders/<int:pk>/rate/', views.RateRestaurantView.as_view(), name='rate-restaurant'),
+
 ]
