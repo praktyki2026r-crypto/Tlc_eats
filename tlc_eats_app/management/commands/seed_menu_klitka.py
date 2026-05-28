@@ -28,34 +28,34 @@ MENU = {
         ('Mafioso', 29.50, 'sos, ser, salami, ostra papryka, zielony pieprz, papryka, oregano', [('20cm', 0), ('30cm', 10.00), ('40cm', 18.00)], []),
     ],
     'Śniadania': [
-        ('Angielskie', 25.00, '2 jajka, 2 kiełbaski, boczek, pieczona fasolka, pieczarki, warzywa, pieczywo', [], []),
+        ('Śniadanie Angielskie', 25.00, '2 jajka, 2 kiełbaski, boczek, pieczona fasolka, pieczarki, warzywa, pieczywo', [], []),
         ('Jajka taplane', 20.00, '3 jajka, pieczywo', [('Klasyczne', 0), ('Z pieczarkami', 3.00), ('Z boczkiem', 4.00)], []),
-        ('Firmowe (dla 2 osób)', 49.00, '2 jajka, 2 rodzaje wędlin, 4 rodzaje sera, pomidor, ogórek, oliwki, przetwory owocowe, masło, pieczywo, sosy, kawa/herbata', [], []),
+        ('Śniadanie Firmowe (dla 2 osób)', 49.00, '2 jajka, 2 rodzaje wędlin, 4 rodzaje sera, pomidor, ogórek, oliwki, przetwory owocowe, masło, pieczywo, sosy, kawa/herbata', [], []),
+    ],
+    'Dania główne': [
+        ('Zapiekanka Klasyczna', 14.00, 'sos, ser, pieczarki, oregano', [], []),
+        ('Zapiekanka Z Piekła Rodem', 16.00, 'sos, ser, pieczarki, ostra papryka, pomidor, oregano', [], []),
+        ('Zapiekanka Kurczak Country', 17.00, 'sos, ser, kurczak, papryka, kukurydza, oregano', [], []),
+        ('Zapiekanka Mięsna Fantazja', 17.50, 'sos, ser, kurczak, boczek, szynka, oregano', [], []),
+        ('Zapiekanka Boloński Osioł', 17.50, 'sos, ser, salami, cebulka, papryka, oregano', [], []),
+        ('Zapiekanka Don Wicio', 19.50, 'sos, ser, oregano', [], ['5 wybranych składników (wpisać w notatce)']),
+        ('Zapiekanka Vegetariana', 16.00, 'sos, ser, ogórek, papryka, oliwki, cebulka, oregano', [], []),
+        ('Zapiekanka Curry', 17.00, 'sos, ser, kurczak, curry, ananas, oregano', [], []),
+        ('Zapiekanka Zbója', 17.00, 'sos, ser, oscypki, ziel. pieprz, papryka, oregano, boczek', [], []),
+        ('Zapiekanka Mexico', 17.00, 'sos, ser, kurczak, cz. fasola, kukurydza, ostra papryka, oregano', [], []),
+        ('Zapiekanka Pirata', 17.00, 'sos, ser, pieczarki, pomidorki, tuńczyk', [], []),
     ],
     'Sałatki': [
-        ('Grecka', 25.00, '', [], []),
-        ("A'la Cezar", 28.00, '', [], []),
-        ('Z tuńczykiem', 25.00, '', [], []),
+        ('Sałatka Grecka', 25.00, '', [], []),
+        ("Sałatka A'la Cezar", 28.00, '', [], []),
+        ('Sałatka z tuńczykiem', 25.00, '', [], []),
     ],
-    'Zapiekanki z pieca': [
-        ('Klasyczna', 14.00, 'sos, ser, pieczarki, oregano', [], []),
-        ('Z Piekła Rodem', 16.00, 'sos, ser, pieczarki, ostra papryka, pomidor, oregano', [], []),
-        ('Kurczak Country', 17.00, 'sos, ser, kurczak, papryka, kukurydza, oregano', [], []),
-        ('Mięsna Fantazja', 17.50, 'sos, ser, kurczak, boczek, szynka, oregano', [], []),
-        ('Boloński Osioł', 17.50, 'sos, ser, salami, cebulka, papryka, oregano', [], []),
-        ('Don Wicio', 19.50, 'sos, ser, oregano', [], ['5 wybranych składników (wpisać w notatce)']),
-        ('Vegetariana', 16.00, 'sos, ser, ogórek, papryka, oliwki, cebulka, oregano', [], []),
-        ('Curry', 17.00, 'sos, ser, kurczak, curry, ananas, oregano', [], []),
-        ('Zbója', 17.00, 'sos, ser, oscypki, ziel. pieprz, papryka, oregano, boczek', [], []),
-        ('Mexico', 17.00, 'sos, ser, kurczak, cz. fasola, kukurydza, ostra papryka, oregano', [], []),
-        ('Pirata', 17.00, 'sos, ser, pieczarki, pomidorki, tuńczyk', [], []),
-    ],
-    'Frytki z pieca': [
+    'Dodatki do dań': [
         ('Frytki 300g', 15.00, '', [], []),
         ('Frytki z serem', 19.00, '', [], []),
         ('Frytkowa uczta 600g + 3 sosy', 28.00, '', [], []),
     ],
-    'Kawy': [
+    'Napoje': [
         ('Kawa czarna', 10.00, '', [], []),
         ('Kawa biała', 12.00, '', [], []),
         ('Latte Macchiato', 13.00, '', [], []),
@@ -68,8 +68,6 @@ MENU = {
         ('Cappuccino', 13.00, '', [], []),
         ('White chocolate cappuccino', 16.50, '', [], []),
         ('Kolorowe Latte', 16.50, '', [], []),
-    ],
-    'Napoje Rozgrzewające': [
         ('Herbata', 9.00, '', [], []),
         ('Herbata zimowa', 14.00, '', [], []),
         ('Herbata zimowa z rumem', 19.00, '', [], []),
@@ -77,17 +75,11 @@ MENU = {
         ('Gorąca biała czekolada', 16.00, '', [], []),
         ('Gorąca różowa czekolada', 18.00, '', [], []),
         ('Gorąca niebieska czekolada', 18.00, '', [], []),
-    ],
-    'Mrożone Napoje': [
         ('Kawa mrożona', 16.00, '', [], []),
         ('Czekolada mrożona', 16.00, '', [], []),
         ('Biała czekolada mrożona', 16.00, '', [], []),
         ('Różowa/Niebieska czekolada mrożona', 18.00, '', [], []),
-    ],
-    'Bubble Tea': [
         ('Bubble Tea', 17.00, '', [], ['smak do wyboru: Granat, Truskawka lub Mango (wpisać w notatce)']),
-    ],
-    'Napoje': [
         ('Woda', 8.00, '', [('300ml', 0), ('1L', 11.00)], []),
         ('Tymbark sok 1L', 24.00, '', [], []),
         ('Tymbark 250ml', 9.00, '', [], []),
@@ -98,12 +90,13 @@ MENU = {
     ],
 }
 
+
 class Command(BaseCommand):
     help = 'Seed menu Klitka u Witka Pizzeria'
 
     def handle(self, *args, **kwargs):
         try:
-            restaurant = Restaurant.objects.get(name='Klitka u Witka Pizzeria')
+            restaurant = Restaurant.objects.get(name='Klitka u Witka')
         except Restaurant.DoesNotExist:
             self.stdout.write(self.style.ERROR('Nie znaleziono Klitka u Witka Pizzeria w bazie!'))
             return

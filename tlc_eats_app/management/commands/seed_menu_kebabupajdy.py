@@ -2,8 +2,7 @@ from django.core.management.base import BaseCommand
 from tlc_eats_app.models import Restaurant, Category, MenuItem, OptionGroup, Option
 
 MENU = {
-    'Kebab': [
-        # (name, base_price, ingredients, sizes[(label, extra_price)], addons)
+    'Dania główne': [
         ('Kebab w bułce', 24.00, 'mięso, surówka, sos', [('Duży', 0), ('Mały', -4.00)], ['mięso do wyboru: kurczak lub wołowina (wpisać w notatce)', 'sos do wyboru: łagodny, średni, ostry, bardzo ostry (wpisać w notatce)']),
         ('Kebab w bułce + frytki', 26.00, 'mięso, surówka, sos, frytki w środku', [('Duży', 0)], ['mięso do wyboru: kurczak lub wołowina (wpisać w notatce)', 'sos do wyboru: łagodny, średni, ostry, bardzo ostry (wpisać w notatce)']),
         ('Kebab w cieście', 24.00, 'mięso, surówka, sos', [('Duży', 0), ('Mały', -4.00)], ['mięso do wyboru: kurczak lub wołowina (wpisać w notatce)', 'sos do wyboru: łagodny, średni, ostry, bardzo ostry (wpisać w notatce)']),
@@ -12,23 +11,22 @@ MENU = {
         ('Kebab servets', 25.00, 'mięso, frytki, sos', [('Duży', 0), ('Mały', -5.00)], ['mięso do wyboru: kurczak lub wołowina (wpisać w notatce)', 'sos do wyboru: łagodny, średni, ostry, bardzo ostry (wpisać w notatce)']),
         ('Tortilla Vege', 20.00, 'warzywa, surówka, sos', [], ['sos do wyboru: łagodny, średni, ostry, bardzo ostry (wpisać w notatce)']),
         ('Sałatka z mięsem', 21.00, 'mięso, surówka, sos', [], ['mięso do wyboru: kurczak lub wołowina (wpisać w notatce)', 'sos do wyboru: łagodny, średni, ostry, bardzo ostry (wpisać w notatce)']),
-    ],
-    'Inne': [
         ('Zapiekanka', 12.00, '', [], []),
         ('Frytki', 9.00, '', [('Małe', 0), ('Duże', 1.00)], []),
+    ],
+    'Dodatki do dań': [
+        ('Podwójne mięso', 8.00, '', [], []),
+        ('Cebulka prażona', 1.00, '', [], []),
+        ('Dodatkowy sos', 2.00, '', [], ['sos do wyboru: łagodny czosnek, łagodny koperek, średnio ostry, ostry, bardzo ostry, mix sosów (wpisać w notatce)']),
+        ('Opakowanie na wynos', 1.00, '', [], []),
     ],
     'Napoje': [
         ('Napój puszka 0,33l', 6.00, '', [], ['wybór smaku: Pepsi, 7up, Mirinda, Lipton (wpisać w notatce)']),
         ('Napój butelka 0,5l', 8.00, '', [], ['wybór smaku: Pepsi, 7up, Mirinda, Lipton (wpisać w notatce)']),
         ('Woda', 4.00, '', [], []),
     ],
-    'Dodatki': [
-        ('Podwójne mięso', 8.00, '', [], []),
-        ('Cebulka prażona', 1.00, '', [], []),
-        ('Dodatkowy sos', 2.00, '', [], ['sos do wyboru: łagodny czosnek, łagodny koperek, średnio ostry, ostry, bardzo ostry, mix sosów (wpisać w notatce)']),
-        ('Opakowanie na wynos', 1.00, '', [], []),
-    ],
 }
+
 
 class Command(BaseCommand):
     help = 'Seed menu Kebab u Pajdy'

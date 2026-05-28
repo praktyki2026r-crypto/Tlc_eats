@@ -38,8 +38,29 @@ class Command(BaseCommand):
         self.stdout.write('Usunięto stare dane.')
 
         # DONER
-        cat = Category.objects.create(name='Doner', restaurant=restaurant)
-        self.stdout.write('\n[Kategoria] Doner')
+        cat = Category.objects.create(name='Kebab', restaurant=restaurant)
+        self.stdout.write('\n[Kategoria] Kebab')
+
+        # GRAND
+        create_item(restaurant, cat,
+            'Grand Classic', 39.90,
+            'mięso doner, frytki, biała kapusta, czerwona kapusta, mix sałat, pomidor, cebula, rukola, 2x sos; mięso do wyboru: kurczak +0zł, wołowina +5zł (wpisz w notatce)')
+        self.stdout.write(self.style.SUCCESS('  Dodano: Grand Classic'))
+
+        create_item(restaurant, cat,
+            'Grand Meatlovers', 45.90,
+            'mięso doner, frytki, ser żółty, kukurydza, cebula, rukola, 2x sos; mięso do wyboru: kurczak +0zł, wołowina +7zł (wpisz w notatce)')
+        self.stdout.write(self.style.SUCCESS('  Dodano: Grand Meatlovers'))
+
+        create_item(restaurant, cat,
+            'Grand Fit', 42.90,
+            'mięso doner, pomidor, serek turecki, papryka peperoni; mięso do wyboru: kurczak +0zł, wołowina +7zł (wpisz w notatce)')
+        self.stdout.write(self.style.SUCCESS('  Dodano: Grand Fit'))
+
+        create_item(restaurant, cat,
+            'Donerdilla', 31.90,
+            'tortilla, mięso doner, ser żółty, kukurydza, prażona cebulka, sos bbq; mięso do wyboru: kurczak +0zł, wołowina +3zł (wpisz w notatce)')
+        self.stdout.write(self.style.SUCCESS('  Dodano: Donerdilla'))
 
         create_item(restaurant, cat,
             'Doner w bułce', 25.90,
@@ -73,10 +94,6 @@ class Command(BaseCommand):
             'Greco box', 24.90,
             'mięso, frytki, mix sałat, ser grecki, oliwki czarne, pomidor, cebula, rukola; sos do wyboru (wpisz w notatce)')
         self.stdout.write(self.style.SUCCESS('  Dodano: Greco box'))
-
-        # GRECO & SPECIALTY
-        cat = Category.objects.create(name='Greco & Specialty', restaurant=restaurant)
-        self.stdout.write('\n[Kategoria] Greco & Specialty')
 
         create_item(restaurant, cat,
             'Greco w bułce', 27.90,
@@ -114,10 +131,6 @@ class Command(BaseCommand):
             sizes=[('S (120g)', 0), ('L (200g)', 8.00), ('XL (300g)', 16.00)])
         self.stdout.write(self.style.SUCCESS('  Dodano: Jalapenos tortilla'))
 
-        # MINI DONER
-        cat = Category.objects.create(name='Mini Doner', restaurant=restaurant)
-        self.stdout.write('\n[Kategoria] Mini Doner')
-
         create_item(restaurant, cat,
             'Mini tortilla', 27.90,
             'mięso 70g, soczyste, krówki')
@@ -132,10 +145,6 @@ class Command(BaseCommand):
             'Mini Nuggets box', 25.90,
             'frytki, nuggets 4szt, soczyste, krówki; sos do wyboru: ketchup lub sos (wpisz w notatce)')
         self.stdout.write(self.style.SUCCESS('  Dodano: Mini Nuggets box'))
-
-        # FALAFEL
-        cat = Category.objects.create(name='Falafel', restaurant=restaurant)
-        self.stdout.write('\n[Kategoria] Falafel')
 
         create_item(restaurant, cat,
             'Falafel Classic', 23.90,
@@ -181,8 +190,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('  Dodano: Sałatka Góralska'))
 
         # NUGGETS & PRZEKĄSKI
-        cat = Category.objects.create(name='Nuggets & Przekąski', restaurant=restaurant)
-        self.stdout.write('\n[Kategoria] Nuggets & Przekąski')
+        cat = Category.objects.create(name='Nuggets', restaurant=restaurant)
+        self.stdout.write('\n[Kategoria] Nuggets')
 
         create_item(restaurant, cat,
             'Nuggets', 15.90,
@@ -215,29 +224,5 @@ class Command(BaseCommand):
             'Frytki belgijskie', 15.90, '',
             sizes=[('S (150g)', 0), ('L (180g)', 2.00)])
         self.stdout.write(self.style.SUCCESS('  Dodano: Frytki belgijskie'))
-
-        # GRAND
-        cat = Category.objects.create(name='Grand', restaurant=restaurant)
-        self.stdout.write('\n[Kategoria] Grand')
-
-        create_item(restaurant, cat,
-            'Grand Classic', 39.90,
-            'mięso doner, frytki, biała kapusta, czerwona kapusta, mix sałat, pomidor, cebula, rukola, 2x sos; mięso do wyboru: kurczak +0zł, wołowina +5zł (wpisz w notatce)')
-        self.stdout.write(self.style.SUCCESS('  Dodano: Grand Classic'))
-
-        create_item(restaurant, cat,
-            'Grand Meatlovers', 45.90,
-            'mięso doner, frytki, ser żółty, kukurydza, cebula, rukola, 2x sos; mięso do wyboru: kurczak +0zł, wołowina +7zł (wpisz w notatce)')
-        self.stdout.write(self.style.SUCCESS('  Dodano: Grand Meatlovers'))
-
-        create_item(restaurant, cat,
-            'Grand Fit', 42.90,
-            'mięso doner, pomidor, serek turecki, papryka peperoni; mięso do wyboru: kurczak +0zł, wołowina +7zł (wpisz w notatce)')
-        self.stdout.write(self.style.SUCCESS('  Dodano: Grand Fit'))
-
-        create_item(restaurant, cat,
-            'Donerdilla', 31.90,
-            'tortilla, mięso doner, ser żółty, kukurydza, prażona cebulka, sos bbq; mięso do wyboru: kurczak +0zł, wołowina +3zł (wpisz w notatce)')
-        self.stdout.write(self.style.SUCCESS('  Dodano: Donerdilla'))
 
         self.stdout.write(self.style.SUCCESS('\nGotowe!'))

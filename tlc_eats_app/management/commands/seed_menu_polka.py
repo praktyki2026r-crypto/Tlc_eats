@@ -23,11 +23,11 @@ MENU = {
         ('Frytki z batatów', 26, ''),
     ],
     'Sałatki': [
-        ('Buratta', 33, 'włoska buratta, bazylia, pomidor, pesto, oliwa z oliwek i sos balsamiczny'),
-        ('Z wołowiną', 53, 'polędwica wołowa, mix sałat, ogórek, pomidorki koktailowe, papryka, czerwona cebula, pestki sezamu, marchewka, chilli, sos musztardowo miodowy'),
+        ('Sałatka z Buratta', 33, 'włoska buratta, bazylia, pomidor, pesto, oliwa z oliwek i sos balsamiczny'),
+        ('Sałatka z wołowiną', 53, 'polędwica wołowa, mix sałat, ogórek, pomidorki koktailowe, papryka, czerwona cebula, pestki sezamu, marchewka, chilli, sos musztardowo miodowy'),
         ('Domowa sałatka cezar', 42, 'sałata lodowa, kurczak, boczek, grzanki, pomidory, sos cesarski i parmezanem'),
-        ('Grecka', 36, 'mix sałat, ogórek, pomidorki koktailowe, papryka, czerwona cebula, oliwki, ser feta podany z domowym sosem winegrette'),
-        ('Z Kurczakiem i krewetkami', 49, 'mix sałat, pomidorki koktajlowe, kurczak i krewetki w przyprawie cajun, jabłko, orzechy włoskie, ogórek, sos marie rose'),
+        ('Sałatka Grecka', 36, 'mix sałat, ogórek, pomidorki koktailowe, papryka, czerwona cebula, oliwki, ser feta podany z domowym sosem winegrette'),
+        ('Sałatka z Kurczakiem i krewetkami', 49, 'mix sałat, pomidorki koktajlowe, kurczak i krewetki w przyprawie cajun, jabłko, orzechy włoskie, ogórek, sos marie rose'),
     ],
     'Makarony': [
         ('Pappardelle gamberetto', 50, 'krewetki, pomidorki koktajlowe, cukinia, czosnek, świeże chilli serwowane z sosem na bazie białego wina, masła, oliwy z oliwek, natka pietruszki i parmezan'),
@@ -37,7 +37,7 @@ MENU = {
     ],
     'Ryby': [
         ('Tradycyjne FISH AND CHIPS', 43, 'morszczuk (180g) serwowany w cieście piwnym z frytkami, sosem tatarskim oraz sałatką colesław'),
-        ('Karmazyn', 48, 'z patelni serwowany z salsą z mango i mięty podawany z ryżem jaśminowym z kurkumą'),
+        ('Ryba Karmazyn', 48, 'z patelni serwowany z salsą z mango i mięty podawany z ryżem jaśminowym z kurkumą'),
         ('Stek z kałamarnicy', 48, 'podawany w sosie na bazie białego wina, masła, soku z cytryny, czosnku i świeżej natki pietruszki serwowany z mixem z rukoli i sezonowych warzyw'),
     ],
     'Pizza 30cm': [
@@ -109,9 +109,9 @@ MENU = {
         ('Wege burger', 39, 'sałata, ser cammebert, pomidor, czerwona cebula, guacamole'),
     ],
     'Wrapy': [
-        ('Ceasare cajun', 42, 'kurczak w przyprawie cajun, sałata, pomidor, boczek, parmezan, sos ceasare'),
-        ('Serowy kurczak', 42, 'panierowany kurczak, sałata, pomidor, ser cheddar, sos czosnkowy'),
-        ('Alla burito', 42, 'mięso mielone w meksykańskich przyprawach, sałata, pomidor, kolendra, fasola pinto, jalapeno, czerwona papryka, ser cheddar i kwaśna śmietana'),
+        ('Wrap Ceasare cajun', 42, 'kurczak w przyprawie cajun, sałata, pomidor, boczek, parmezan, sos ceasare'),
+        ('Wrap Serowy kurczak', 42, 'panierowany kurczak, sałata, pomidor, ser cheddar, sos czosnkowy'),
+        ('Wrap Alla burito', 42, 'mięso mielone w meksykańskich przyprawach, sałata, pomidor, kolendra, fasola pinto, jalapeno, czerwona papryka, ser cheddar i kwaśna śmietana'),
     ],
     'Desery': [
         ('Czekoladowy fondant', 30, 'ciasto czekoladowe serwowane na ciepło z lodami waniliowymi i bitą śmietaną'),

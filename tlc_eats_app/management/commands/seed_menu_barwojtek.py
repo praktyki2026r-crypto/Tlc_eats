@@ -2,21 +2,19 @@ from django.core.management.base import BaseCommand
 from tlc_eats_app.models import Restaurant, Category, MenuItem, OptionGroup, Option
 
 MENU = {
-    'Dania Obiadowe': [
-        # (name, base_price, ingredients, sizes: [(label, extra_price)])
-        ('Danie Dnia', 16.50, 'zupa, 2 danie, kompot', []),
-        ('2 Danie', 12.50, '', []),
-        ('Zupa', 5.00, '', []),
+    'Dania główne': [
         ('Schabowy zestaw', 17.50, '2 kotlety, 3 gałki ziemniaków lub frytki, zestaw surówek', []),
         ('Drobiowy zestaw', 16.50, '2 kotlety, 3 gałki ziemniaków lub frytki, zestaw surówek', []),
         ('Ser prażony zestaw', 14.50, '2 kawałki sera, ziemniaki lub frytki', []),
-        ('Ryba dorsz', 17.50, '2 kawałki ryby, ziemniaki lub frytki, zestaw surówek', []),
-        ('Ryba miruna', 16.00, '2 kawałki ryby, ziemniaki lub frytki, zestaw surówek', []),
         ('Wątróbka zestaw', 13.50, 'wątróbka z cebulką, ziemniaki lub frytki, zestaw surówek', []),
         ('Placek po węgiersku', 16.50, 'zestaw surówek', []),
         ('Placki ziemniaczane', 6.50, 'śmietana', []),
         ('Fasolka po bretońsku', 9.00, '', [('500ml', 0)]),
         ('Flaki wołowe', 9.00, '', [('500ml', 0)]),
+    ],
+    'Dania rybne': [
+        ('Ryba dorsz', 17.50, '2 kawałki ryby, ziemniaki lub frytki, zestaw surówek', []),
+        ('Ryba miruna', 16.00, '2 kawałki ryby, ziemniaki lub frytki, zestaw surówek', []),
     ],
     'Zupy': [
         ('Barszcz czerwony z uszkami', 7.50, 'barszcz, 12 uszek', [('500ml', 0)]),
@@ -41,12 +39,13 @@ MENU = {
     ],
 }
 
+
 class Command(BaseCommand):
     help = 'Seed menu Bar Mleczny Wojtek Gorlice'
 
     def handle(self, *args, **kwargs):
         try:
-            restaurant = Restaurant.objects.get(name='Bar Mleczny Wojtek Gorlice')
+            restaurant = Restaurant.objects.get(name='Bar Wojtek')
         except Restaurant.DoesNotExist:
             self.stdout.write(self.style.ERROR('Nie znaleziono Bar Mleczny Wojtek Gorlice w bazie!'))
             return
