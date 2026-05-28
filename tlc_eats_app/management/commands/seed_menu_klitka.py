@@ -50,7 +50,7 @@ MENU = {
         ("Sałatka A'la Cezar", 28.00, '', [], []),
         ('Sałatka z tuńczykiem', 25.00, '', [], []),
     ],
-    'Dodatki do dań': [
+    'Dodatki': [
         ('Frytki', 15.00, 'Frytki', [('300g', 0)], []),
         ('Frytki z serem', 19.00, 'Frytki, ser', [('300g', 0)], []),
         ('Frytkowa uczta', 28.00, 'Frytki, 3 sosy', [('600g', 0)], []),
