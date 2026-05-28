@@ -51,9 +51,9 @@ MENU = {
         ('Sałatka z tuńczykiem', 25.00, '', [], []),
     ],
     'Dodatki do dań': [
-        ('Frytki 300g', 15.00, '', [], []),
-        ('Frytki z serem', 19.00, '', [], []),
-        ('Frytkowa uczta 600g + 3 sosy', 28.00, '', [], []),
+        ('Frytki', 15.00, 'Frytki', [('300g', 0)], []),
+        ('Frytki z serem', 19.00, 'Frytki, ser', [('300g', 0)], []),
+        ('Frytkowa uczta', 28.00, 'Frytki, 3 sosy', [('600g', 0)], []),
     ],
     'Napoje': [
         ('Kawa czarna', 10.00, '', [], []),
@@ -70,7 +70,6 @@ MENU = {
         ('Kolorowe Latte', 16.50, '', [], []),
         ('Herbata', 9.00, '', [], []),
         ('Herbata zimowa', 14.00, '', [], []),
-        ('Herbata zimowa z rumem', 19.00, '', [], []),
         ('Gorąca czekolada', 16.00, '', [], []),
         ('Gorąca biała czekolada', 16.00, '', [], []),
         ('Gorąca różowa czekolada', 18.00, '', [], []),
@@ -81,12 +80,11 @@ MENU = {
         ('Różowa/Niebieska czekolada mrożona', 18.00, '', [], []),
         ('Bubble Tea', 17.00, '', [], ['smak do wyboru: Granat, Truskawka lub Mango (wpisać w notatce)']),
         ('Woda', 8.00, '', [('300ml', 0), ('1L', 11.00)], []),
-        ('Tymbark sok 1L', 24.00, '', [], []),
-        ('Tymbark 250ml', 9.00, '', [], []),
+        ('Tymbark 250ml', 9.00, '', [('250ml', 0), ('1L', 15.00)], []),
         ('Coca-Cola', 9.00, '', [('250ml', 0), ('500ml', 3.00)], []),
-        ('Pepsi 500ml', 12.00, '', [], []),
-        ('Nestea 0,4L', 10.00, '', [], []),
-        ('Kubuś Water 0,4L', 8.50, '', [], []),
+        ('Pepsi', 12.00, '', [('500ml', 0)], []),
+        ('Nestea', 10.00, '', [('0,4L', 0)], []),
+        ('Kubuś Water', 8.50, '', [('0,4L', 0)], []),
     ],
 }
 
