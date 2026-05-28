@@ -43,7 +43,7 @@ MENU = {
         ('Filet z kurczaka duszony w jarzynach', 26.00, 'do wyboru: ziemniaki, frytki lub ryż', [], []),
         ('Filet z kurczaka po parysku', 24.00, 'w cieście naleśnikowym, do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Stek z karkówką i cebulką', 25.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
-        ('Kotlet De\'volaille', 28.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
+        ('Kotlet Devolaille', 28.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Kotlet schabowy', 26.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Kotlet schabowy po góralsku', 28.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Gulasz', 22.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
@@ -58,11 +58,10 @@ MENU = {
         ('Bitki schabowe', 24.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Polędwiczki drobiowe panierowane', 24.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Kebab w zestawie z frytkami i surówką', 22.00, 'frytki, surówka', [], []),
-    ],
-    'Dania rybne': [
         ('Filet z mintaja panierowany', 26.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Filet z mintaja duszony w jarzynach', 26.00, 'do wyboru: ziemniaki, frytki lub ryż', [], []),
     ],
+    
     'Sałatki': [
         ("Caesar's Salad", 22.00, 'sałata lodowa, pieczona polędwiczka z kurczaka, pomidor, ogórek, grzanki, sos musztardowy', [], []),
         ('Sałatka grecka', 22.00, 'sałata lodowa, pomidor, ogórek, oliwki, ser feta, oliwa, papryka', [], []),
@@ -73,18 +72,18 @@ MENU = {
         ('Naleśniki z dżemem', 13.00, '', [('2 szt.', 0)], []),
         ('Szarlotka', 13.00, '', [], []),
     ],
-    'Dodatki do dań': [
+    'Dodatki': [
         ('Trzy smaki (zestaw 3 surówek)', 10.00, '', [], []),
         ('Jajko sadzone', 3.00, '', [('1 szt.', 0)], []),
         ('Frytki', 8.00, '', [], []),
         ('Frytki zapiekane z żółtym serem', 12.00, '', [], []),
-        ('Ryż / ziemniaki puree', 5.00, '', [], []),
+        ('Ryż / ziemniaki puree', 5.00, 'ryż/ziemniaki puree(napisz w notatce)', [], []),
         ('Pieczywo', 2.00, '', [], []),
         ('Ketchup, majonez, musztarda, chrzan', 2.00, '', [], []),
     ],
     'Napoje': [
         ('Kawa Ristretto', 7.00, '', [], []),
-        ('Kawa espresso', 7.00, '', [('pojedyncza', 0), ('podwójna', 3.00)], []),
+        ('Kawa espresso', 7.00, '', [('pojedyńcza', 0), ('podwójna', 3.00)], []),
         ('Kawa z ekspresu', 7.00, '', [('mała', 0), ('duża', 4.00)], []),
         ('Kawa parzona', 6.00, '', [], []),
         ('Kawa rozpuszczalna', 7.00, '', [], []),
