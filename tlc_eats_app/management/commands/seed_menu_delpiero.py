@@ -32,7 +32,7 @@ MENU = {
         ('Spaghetti zielone pesto', 29.00, 'zielone pesto, chips z bekonu', [], []),
         ('Tagliatelle gorgonzola', 29.00, 'gorgonzola, gruszka, orzechy', [], []),
     ],
-    'Przystawki & Przekąski': [
+    'Przekąski': [
         ('Bruschetta', 17.00, '3 grzanki z salsą z pomidorów, czosnku, bazylii i oliwy', [], []),
         ('Crudo', 26.00, 'prosciutto crudo, włoski twaróg, pesto, rukola, pomidory koktajlowe', [], []),
         ('Salame', 26.00, 'salami, włoski twaróg, pomidory koktajlowe, rukola', [], []),
@@ -65,17 +65,16 @@ MENU = {
         ('Szarlotka', 19.00, 'na ciepło, lody, bita śmietana', [], []),
         ('Lody', 19.00, 'owoce, bita śmietana', [], []),
         ('Pancakes', 29.00, 'nutella, lody, orzeszki ziemne, słodycze', [], []),
-    ],
-    'Dania rybne': [
         ('Filet rybny', 33.00, 'miruna panierowana, frytki, surówka z białej kapusty', [], []),
     ],
+    
     'Sałatki': [
         ('Vitalite', 29.00, 'szpinak, kurczak, słonecznik, pieczarki, oliwa z oliwek, czosnek, cebula, grzanki', [], []),
         ('Sałatka z kurczakiem', 29.00, 'pekińska, papryka, pomidor, ogórek, kurczak, kukurydza, grzanki', [], []),
         ('Grecka', 29.00, 'sałata lodowa, pomidor, ogórek, oliwki, ser feta, oliwa z oliwek', [], []),
         ('Egzotyczna', 29.00, 'mix sałat, kurczak w chrupiącej panierce, pomidorki koktajlowe, owoce sezonowe, płatki migdałów, sos pikantny mango', [], []),
     ],
-    'Dodatki do dań': [
+    'Dodatki': [
         ('Frytki', 9.00, '', [], []),
         ('Frytki z serem', 12.00, '', [], []),
         ('Ćwiartki ziemniaczane', 13.00, '', [], []),
@@ -107,7 +106,7 @@ MENU = {
         ('Monster', 13.00, '', [], []),
         ('Lemoniada', 13.00, '', [('0,35l', 0)], ['wybór smaku (wpisać w notatce)']),
         ('Dzban soku', 24.00, '', [('1l', 0)], ['wybór smaku (wpisać w notatce)']),
-         ('Shake Oreo', 27.00, '', [], []),
+        ('Shake Oreo', 27.00, '', [], []),
         ('Shake Banan - Wanilia', 27.00, '', [], []),
         ('Shake Masło Orzechowe', 27.00, '', [], []),
         ('Dzban wody', 17.00, '', [('1l', 0)], ['gazowana lub niegazowana (wpisać w notatce)']),
