@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from tlc_eats_app.models import Restaurant, Category, MenuItem, OptionGroup, Option
 
 MENU = {
-    'Przystawki & Przekąski': [
+    'Przystawki': [
         ('Tatar z polędwicy wołowej', 52.00, 'siekany z poszatkowaną cebulą, grzybami, ogórkiem, anchois, kaparami i żółtkiem', [], []),
         ('Krewetki tygrysie', 49.00, 'czosnek, chilli, natka pietruszki, bułeczki', [], []),
         ('Przekąska piwna', 73.00, '', [], []),
@@ -30,17 +30,17 @@ MENU = {
         ('Łosoś (mała porcja)', 30.00, '', [('150g', 0)], []),
         ('Filet drobiowy (mała porcja)', 27.00, '', [('150g', 0)], []),
         ('Kotlet schabowy (mała porcja)', 27.00, '', [('150g', 0)], []),
-    ],
-    'Burgery & Tortille': [
-        ('Chicken Burger / Wege', 39.00, 'bułka maślana, ser cheddar, karmelizowana cebula, rukola, sos curry, frytki', [('Kurczak (kurczak w panierce)', 0), ('Wege (ser halloumi)', 2.00)], []),
-        ('Tortilla / Wege', 38.00, 'sałata lodowa, ogórek, pomidor, czerwona cebula, sos majonezowy chilli, frytki', [('Kurczak w chrupiącej panierce', 0), ('Wege (ser halloumi)', 1.00)], []),
-    ],
-    'Pierogi': [
         ('Pierogi po łemkowsku', 32.00, '', [('10szt', 0)], []),
         ('Pierogi ruskie', 28.00, '', [('10szt', 0)], []),
         ('Pierogi z mięsem', 29.00, '', [('10szt', 0)], []),
         ('Pierogi z borówkami', 28.00, '', [('10szt', 0)], []),
     ],
+
+    'Burgery': [
+        ('Chicken Burger / Wege', 39.00, 'bułka maślana, ser cheddar, karmelizowana cebula, rukola, sos curry, frytki', [('Kurczak w chrupiącej panierce', 0), ('Wege (ser halloumi)', 2.00)], []),
+        ('Tortilla / Wege', 38.00, 'sałata lodowa, ogórek, pomidor, czerwona cebula, sos majonezowy chilli, frytki', [('Kurczak w chrupiącej panierce', 0), ('Wege (ser halloumi)', 1.00)], []),
+    ],
+    
     'Sałatki': [
         ('Sałatka grecka', 36.00, 'ser feta, sałata, ogórek, pomidor, cebula, oliwki, papryka, sos vinaigrette, bułka', [], []),
         ('Sałatka królewska', 41.00, 'kurczak w panierce, sałata, pomidor, ogórek, papryka, cebula, kukurydza, pestki dyni i słonecznika, oliwa z czosnkiem', [], []),
@@ -48,6 +48,7 @@ MENU = {
         ('Sałatka z kurczakiem', 40.00, 'sałata lodowa, kurczak, ogórek, pomidor, cebula, kukurydza, sos vinaigrette, grzanki', [], []),
         ('Sałatka z halloumi', 40.00, 'grylowany ser halloumi, sałata lodowa, szpinak, rukola, pomidor koktajlowy, ogórek', [], []),
     ],
+
     'Dodatki do dań': [
         ('Frytki z batatów z sosami', 23.00, '', [], []),
         ('Ćwiartki ziemniaków', 16.00, '', [('150g', 0)], []),
@@ -60,20 +61,18 @@ MENU = {
         ('Surówka z marchewki', 10.00, '', [], []),
         ('Mizeria', 10.00, '', [], []),
         ('Zasmażana lub młoda kapusta', 13.00, '', [], []),
+        ('Sos Majonezowy', 5.00, '', [], []),
+        ('Sos Curry', 5.00, '', [], []),
+        ('Sos Aioli', 5.00, '', [], []),
+        ('Sos BBQ', 5.00, '', [], []),
+        ('Sos Tatarski', 5.00, '', [], []),
+        ('Sos Sweet-chilli', 5.00, '', [], []),
+        ('Sos Majonez truflowy', 5.00, '', [], []),
+        ('Sos Sos vinaigrette', 4.00, '', [], []),
+        ('Sos Oliwa czosnkowa', 4.00, '', [], []),
     ],
-    'Sosy': [
-        ('Majonezowy', 5.00, '', [], []),
-        ('Curry', 5.00, '', [], []),
-        ('Aioli', 5.00, '', [], []),
-        ('BBQ', 5.00, '', [], []),
-        ('Tatarski', 5.00, '', [], []),
-        ('Sweet-chilli', 5.00, '', [], []),
-        ('Majonez truflowy', 5.00, '', [], []),
-        ('Sos vinaigrette', 4.00, '', [], []),
-        ('Oliwa czosnkowa', 4.00, '', [], []),
-    ],
+    
 }
-
 
 class Command(BaseCommand):
     help = 'Seed menu Dark Pub'
