@@ -2,11 +2,11 @@ from django.core.management.base import BaseCommand
 from tlc_eats_app.models import Restaurant, Category, MenuItem
 
 MENU = {
-    'Przystawki': [
-        ('Tigelle Emiliane (3 szt.)', 10, 'Okrągłe chlebki pochodzące z regionu Emilia-Romania podawane z oliwą z oliwek extra virgin lub oliwą czosnkową'),
+    'Przekąski': [
+        ('Tigelle Emiliane', 10, 'Okrągłe chlebki pochodzące z regionu Emilia-Romania podawane z oliwą z oliwek extra virgin lub oliwą czosnkową',[('3 szt.', 0)] ,[]),
         ('Antipasti – deska serów i wędlin dla dwóch osób', 80, 'Gorgonzola, mozzarella di bufala, Grana Padano, Parmigiano Reggiano, prosciutto cotto, salami Napoli, szynka parmeńska, boczek rolowany, oliwki czarne, pomidory suszone, focaccia'),
     ],
-    'Pizza Rosa': [
+    'Pizza': [
         ('Margherita (rosa)', 33, 'Pomidory San Marzano DOP, mozzarella Fior di Latte, parmigiano reggiano, oliwa z oliwek, świeża bazylia'),
         ('Cotto (rosa)', 36, 'Pomidory San Marzano DOP, mozzarella Fior di Latte, prosciutto cotto, oliwa z oliwek, świeża bazylia'),
         ('Regina (rosa)', 37, 'Pomidory San Marzano DOP, mozzarella Fior di Latte, prosciutto cotto, pieczarki, oliwa z oliwek, świeża bazylia'),
@@ -20,8 +20,6 @@ MENU = {
         ('Bufalina (rosa)', 49, 'Pomidory San Marzano DOP, mozzarella di bufalo DOP, oliwa z oliwek, świeża bazylia'),
         ('Milano (rosa)', 37, 'Pomidory San Marzano DOP, mozzarella Fior di Latte, salami łagodne, pieczarki, oliwa z oliwek, świeża bazylia'),
         ('Calzone (rosa)', 37, 'ciasto w kszatlcie muszli, Pomidory San marzano dop, mozzarella Fior di Latte, salami Napoli, ricotta, oliwa z oliwek, świeża bazylia'),
-    ],
-    'Pizza Bianca': [
         ('Cinque Formaggi (bianca)', 43, 'Mozzarella Fior di Latte, scamarza, gorgonzola, parmezan, ricotta, oliwa z oliwek, świeża bazylia'),
         ('Pizza Pesto Verde (bianca)', 52, 'Mozzarella Fior di latte, Parmigiano Reggiano, pomidorki cherry, pomidory suszone, burrata, pesto bazyliowe'),
         ('Masaniello (bianca)', 49, 'Friarielli, mozzarella Fior di Latte, Parmigiano Reggiano, salsiccia napoletana, bazylia, oliwa z oliwek'),
@@ -51,13 +49,10 @@ MENU = {
         ('Angioletti fritti con Nutella', 21, 'Smażone paluchy z ciasta na głębokim oleju, podawane z cukrem pudrem i Nutellą'),
     ],
     'Napoje': [
-        ('Pepsi/Coca cola 250ml', 8, ''),
-        ('Pepsi/Coca cola 1l', 22, ''),
-        ('Soki 250ml', 7, 'pomarańcza/ jabłko/ multiwitamina'),
-        ('Soki 1l', 19, 'pomarańcza/ jabłko/ multiwitamina'),
-        ('Herbata', 9, 'o dostępne smaki proszę zapytać naszą obsługę'),
-        ('Woda 0,33l', 5, ''),
-        ('Woda 1l', 15, ''),
+        ('Pepsi/Coca cola', 8, 'pepsi/cola(napisz w notatce)',[('250ml', 0), ('1l', 14)], []),
+        ('Sok', 7, 'pomarańcza/ jabłko/ multiwitamina', [('250ml', 0), ('1l', 12)], []),
+        ('Herbata', 9, ''),
+        ('Woda', 5, '',[('0,33l', 0), ('1l', 10)], []),
     ],
 }
 
