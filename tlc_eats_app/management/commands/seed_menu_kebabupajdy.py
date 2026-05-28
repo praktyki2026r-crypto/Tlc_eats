@@ -14,15 +14,14 @@ MENU = {
         ('Zapiekanka', 12.00, '', [], []),
         ('Frytki', 9.00, '', [('Małe', 0), ('Duże', 1.00)], []),
     ],
-    'Dodatki do dań': [
+    'Dodatki': [
         ('Podwójne mięso', 8.00, '', [], []),
         ('Cebulka prażona', 1.00, '', [], []),
         ('Dodatkowy sos', 2.00, '', [], ['sos do wyboru: łagodny czosnek, łagodny koperek, średnio ostry, ostry, bardzo ostry, mix sosów (wpisać w notatce)']),
         ('Opakowanie na wynos', 1.00, '', [], []),
     ],
     'Napoje': [
-        ('Napój puszka 0,33l', 6.00, '', [], ['wybór smaku: Pepsi, 7up, Mirinda, Lipton (wpisać w notatce)']),
-        ('Napój butelka 0,5l', 8.00, '', [], ['wybór smaku: Pepsi, 7up, Mirinda, Lipton (wpisać w notatce)']),
+        ('Napój (puszka)', 6.00, '', [('0,33l', 0), ('0,5l', 2.00)], ['wybór smaku: Pepsi, 7up, Mirinda, Lipton (wpisać w notatce)']),
         ('Woda', 4.00, '', [], []),
     ],
 }
