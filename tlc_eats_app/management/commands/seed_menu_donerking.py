@@ -110,7 +110,7 @@ class Command(BaseCommand):
         create_item(restaurant, cat,
             "King's Wrap", 26.90,
             'mięso, frytki, ser żółty; kukurydza lub cebula (wpisz w notatce); sos do wyboru (wpisz w notatce)',
-            sizes=[('S (100g)', 0), ('L (200g)', 7.00), ('XL (200g)', 12.00)])
+            sizes=[('S (100g)', 0), ('L (200g)', 7.00), ('XL (300g)', 12.00)])
         self.stdout.write(self.style.SUCCESS("  Dodano: King's Wrap"))
 
         create_item(restaurant, cat,

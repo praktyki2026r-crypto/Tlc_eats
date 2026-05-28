@@ -28,7 +28,7 @@ MENU = {
         ('Wątróbka z cebulką', 16.00, '', [], []),
         ('Wątróbka panierowana', 16.00, '', [], []),
         ('Kiełbasa z cebulką', 10.00, '', [], []),
-        ('Gołąbki z sosem pomidorowym', 18.00, '', [('2 szt.', 0)], []),
+        ('Gołąbki z sosem pomidorowym', 18.00, 'twaróg, ziemniaki', [('2 szt.', 0)], []),
         ('Pierogi ukraińskie z omastą', 18.00, 'twaróg, ziemniaki', [('10 szt.', 0)], []),
         ('Pierogi ukraińskie z pieczarkami', 18.00, 'twaróg, ziemniaki, pieczarki', [('10 szt.', 0)], []),
         ('Pierogi z mięsem', 18.00, '', [('10 szt.', 0)], []),
@@ -61,7 +61,6 @@ MENU = {
         ('Filet z mintaja panierowany', 26.00, 'do wyboru: ziemniaki, frytki lub ryż, surówka', [], []),
         ('Filet z mintaja duszony w jarzynach', 26.00, 'do wyboru: ziemniaki, frytki lub ryż', [], []),
     ],
-    
     'Sałatki': [
         ("Caesar's Salad", 22.00, 'sałata lodowa, pieczona polędwiczka z kurczaka, pomidor, ogórek, grzanki, sos musztardowy', [], []),
         ('Sałatka grecka', 22.00, 'sałata lodowa, pomidor, ogórek, oliwki, ser feta, oliwa, papryka', [], []),
@@ -147,7 +146,6 @@ class Command(BaseCommand):
                             group=group,
                             name=label,
                             extra_price=extra_price,
-                            capacity=label,
                         )
                         self.stdout.write(f'    Rozmiar: {label} ({extra_price:+.2f} zł)')
 

@@ -148,7 +148,6 @@ class Command(BaseCommand):
                             group=group,
                             name=label,
                             extra_price=extra_price,
-                            capacity=label,
                         )
                         self.stdout.write(f'    Rozmiar: {label} ({extra_price:+.2f} zł)')
 
